@@ -510,6 +510,125 @@ a.link{color:var(--primary-dark);text-decoration:underline;font-weight:600;}
   .grid{gap:22px;}
 }
 </style>
+<style>
+/* ===== 听书读书 / 书架 ===== */
+.book-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:12px;}
+.book-card{position:relative;background:var(--card);border-radius:16px;padding:8px;cursor:pointer;transition:transform .15s;}
+.book-card:active{transform:scale(.96);}
+.book-cover{width:100%;aspect-ratio:3/4;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:34px;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.2);}
+.book-name{font-size:12px;font-weight:700;margin-top:6px;line-height:1.3;max-height:2.6em;overflow:hidden;}
+.book-author{font-size:10px;color:var(--text-light);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.book-prog{height:4px;background:var(--border);border-radius:4px;margin-top:6px;overflow:hidden;}
+.book-prog span{display:block;height:100%;background:var(--primary);}
+.book-go{position:absolute;left:8px;bottom:8px;font-size:10px;color:var(--primary);background:rgba(255,255,255,.85);padding:2px 6px;border-radius:8px;}
+.book-del{position:absolute;top:4px;right:4px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.35);color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;}
+/* 阅读器 */
+#reader{position:fixed;inset:0;left:50%;transform:translateX(-50%);max-width:480px;background:#fff;color:#222;z-index:300;display:none;flex-direction:column;}
+#reader.show{display:flex;}
+.reader-top{display:flex;align-items:center;gap:10px;padding:14px 16px;padding-top:calc(14px + env(safe-area-inset-top));border-bottom:1px solid rgba(0,0,0,.06);}
+.rt-back{font-size:20px;cursor:pointer;flex-shrink:0;}
+.rt-title{flex:1;font-weight:700;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rt-tools{display:flex;gap:8px;align-items:center;flex-shrink:0;}
+.rt-tools span{cursor:pointer;font-size:12px;padding:4px 8px;border-radius:10px;background:rgba(0,0,0,.05);white-space:nowrap;}
+#readerText{position:relative;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 18px;line-height:1.95;font-size:18px;}
+#readerText p{margin:0 0 1em;text-align:justify;}
+#readerText .sen.on{background:rgba(255,193,71,.4);border-radius:4px;}
+.reader-foot{display:flex;align-items:center;gap:12px;padding:12px 16px;padding-bottom:calc(12px + env(safe-area-inset-bottom));border-top:1px solid rgba(0,0,0,.06);}
+.rf-play{width:48px;height:48px;border-radius:50%;border:none;background:var(--primary);color:#fff;font-size:20px;flex-shrink:0;cursor:pointer;}
+.rf-mid{flex:1;min-width:0;}
+.rf-rates{display:flex;gap:6px;}
+.rate-btn{font-size:12px;padding:4px 8px;border-radius:10px;border:1px solid var(--border);background:#fff;cursor:pointer;}
+.rate-btn.on{background:var(--primary);color:#fff;border-color:var(--primary);}
+.rf-prog{font-size:12px;color:var(--text-light);}
+.reader.theme-sepia{background:#f5ecd8;color:#5b4a2f;}
+.reader.theme-sepia #readerText{color:#5b4a2f;}
+.reader.theme-night{background:#161616;color:#cfcfcf;}
+.reader.theme-night #readerText{color:#d6d6d6;}
+.reader.theme-night .reader-top,.reader.theme-night .reader-foot{border-color:rgba(255,255,255,.12);}
+.reader.theme-night .rt-tools span,.reader.theme-night .rate-btn{background:rgba(255,255,255,.12);border-color:transparent;color:#ddd;}
+</style>
+<script>
+/* ============ 听书读书 ============ */
+const BOOK_BGS=['linear-gradient(135deg,#FFB6C1,#FF8FAB)','linear-gradient(135deg,#A8E6CF,#88D8B0)','linear-gradient(135deg,#98A8F0,#B5C0F5)','linear-gradient(135deg,#FFD3A5,#FD9D6F)','linear-gradient(135deg,#B5A0FF,#8E7CFF)','linear-gradient(135deg,#9AD0EC,#7FB5E6)'];
+let _bkCur=null,_bkSents=[],_bkIdx=0,_bkPlaying=false,_bkPaused=false,_bkVoices=[],_bkRate=1,_bkFs=18,_bkTheme='day',_bkGuard=false,_bkSaveT=null;
+function esc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function hashStr(s){let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h;}
+function coverBg(b){return BOOK_BGS[hashStr((b.id||b.title||'x')+'')%BOOK_BGS.length];}
+function splitSents(t){const parts=String(t).split(/([。！？!?；;\n])/);const res=[];let buf='';function flush(){const s=buf.trim().replace(/^[\s‘’'"]+|[\s‘’'"]+$/g,'');if(s)res.push(s);buf='';}for(let i=0;i<parts.length;i++){buf+=parts[i];if(/[。！？!?；;\n]/.test(parts[i]))flush();}if(buf.trim())flush();return res;}
+function SEED_BOOKS(){return [
+ {id:'seed1',title:'夜航的灯',author:'小魏',emoji:'🛶',progress:0,addedAt:Date.now(),text:"海边的渔村有个古老的习惯：每晚出海的船，都要在桅杆上挂一盏小灯。\n灯不是为了照亮自己，而是为了让回港的船看见彼此，不至于在黑暗里相撞。\n老渔民阿伯说：'一盏灯的光很弱，可满海都是灯，夜路就不黑了。'\n后来我离开渔村去城里读书，常常在深夜的地铁里想起那盏灯。\n我们每个人不也都是海上的船吗？\n偶尔给别人一点微光——一句问候，一次让步，一个善意的提醒——世界就会比想象中亮一些。\n所以，今天也别忘了，把自己那盏灯点亮。"},
+ {id:'seed2',title:'给三年后的自己',author:'小魏',emoji:'🌱',progress:0,addedAt:Date.now(),text:"亲爱的，展信安。\n如果你正读到这封信，说明我们已经一起走过了三年。\n不知道现在的你，是否还像从前那样，容易焦虑，又容易原谅自己？\n我想告诉那时的你：你担心的很多事，其实最后都成了路过的风景。\n考砸的试、搞砸的汇报、没说出口的喜欢，时间都会替你轻轻合上。\n希望你保住了三件东西：对生活的好奇，对他人的温柔，以及半夜饿了对一碗面的热爱。\n如果累了，就慢一点，没有人规定你必须一直跑。\n记得，你已经做得很好了。"}
+];}
+function getBookLib(){let lib=load('bookLib',null);if(!lib||!Array.isArray(lib)){lib=SEED_BOOKS();save('bookLib',lib);}return lib;}
+function saveBookLib(lib){save('bookLib',lib);}
+function renderBooks(){
+ const lib=getBookLib();const shelf=document.getElementById('bookShelf');
+ if(!lib.length){if(shelf)shelf.innerHTML='';const e=document.getElementById('bookEmpty');if(e)e.style.display='block';}
+ else{const e=document.getElementById('bookEmpty');if(e)e.style.display='none';
+  shelf.innerHTML=lib.map(function(b){
+   const pct=Math.round((b.progress||0)*100);const hasText=!!b.text&&b.text.trim().length>0;
+   let act;if(hasText)act='onclick="openBook(\''+b.id+'\')"';else if(b.url)act='onclick="window.open(\''+b.url+'\',\'_blank\')"';else act='onclick="toast(\'这本书还没有内容哦\')"';
+   return '<div class="book-card" '+act+'>'+
+     '<div class="book-cover" style="background:'+coverBg(b)+'">'+(b.emoji||'📖')+'</div>'+
+     '<div class="book-name">'+esc(b.title)+'</div>'+
+     '<div class="book-author">'+esc(b.author||'未知')+'</div>'+
+     '<div class="book-prog"><span style="width:'+pct+'%"></span></div>'+
+     (b.url?'<div class="book-go" onclick="event.stopPropagation();window.open(\''+b.url+'\',\'_blank\')">去原站↗</div>':'')+
+     '<div class="book-del" onclick="event.stopPropagation();deleteBook(\''+b.id+'\')">✕</div>'+
+   '</div>';
+  }).join('');
+ }
+ const t=document.getElementById('bkTotal'),r=document.getElementById('bkReading'),d=document.getElementById('bkDone');
+ if(t)t.textContent=lib.length;
+ if(r)r.textContent=lib.filter(function(b){(b.progress||0)>0&&(b.progress||0)<0.999;}).length;
+ if(d)d.textContent=lib.filter(function(b){(b.progress||0)>=0.999;}).length;
+}
+function openBook(id){const lib=getBookLib();const b=lib.find(function(x){return x.id===id;});if(!b)return;if(b.text&&b.text.trim()){openReader(b);}else if(b.url){window.open(b.url,'_blank');}else{toast('这本书还没有内容哦');}}
+function deleteBook(id){if(!confirm('确定删除这本书？'))return;let lib=getBookLib().filter(function(b){return b.id!==id;});saveBookLib(lib);renderBooks();toast('已删除');}
+function onBookFile(e){const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=function(){const ta=document.getElementById('bkText');if(ta)ta.value=rd.result;toast('已导入：'+f.name);};rd.readAsText(f);}
+function loadReaderPrefs(){return load('readerPrefs',{fs:18,theme:'day',rate:1});}
+function saveReaderPrefs(){save('readerPrefs',{fs:_bkFs,theme:_bkTheme,rate:_bkRate});}
+function setPlayUI(on){const b=document.getElementById('rfPlay');if(b)b.textContent=on?'⏸':'▶️';}
+function pickZhVoice(){if(!_bkVoices.length&&window.speechSynthesis)_bkVoices=speechSynthesis.getVoices();return _bkVoices.find(function(v){return /zh|cmn|Chinese/i.test(v.lang+v.name);})||null;}
+function speakFrom(i){
+ if(!_bkSents.length)return;
+ if(i>=_bkSents.length){_bkPlaying=false;_bkPaused=false;updateBookProgress(1);setPlayUI(false);toast('🎉 听完了');return;}
+ _bkIdx=i;
+ const u=new SpeechSynthesisUtterance(_bkSents[i]);u.lang='zh-CN';u.rate=_bkRate;const v=pickZhVoice();if(v)u.voice=v;
+ u.onend=function(){if(!_bkPlaying)return;const ni=i+1;updateBookProgress(_bkSents.length?ni/_bkSents.length:1);highlightSen(ni);speakFrom(ni);};
+ u.onerror=function(){};
+ if(window.speechSynthesis)speechSynthesis.speak(u);
+ highlightSen(i);setPlayUI(true);
+}
+function togglePlay(){if(!_bkCur||!_bkSents.length){toast('这本书没有正文可朗读');return;}if(_bkPlaying){_bkPlaying=false;_bkPaused=true;if(window.speechSynthesis)speechSynthesis.cancel();setPlayUI(false);}else{_bkPlaying=true;_bkPaused=false;speakFrom(_bkIdx);}}
+function setRate(r){_bkRate=r;saveReaderPrefs();const bs=document.querySelectorAll('.rate-btn');for(let i=0;i<bs.length;i++)bs[i].classList.toggle('on',parseFloat(bs[i].dataset.r)===r);if(_bkPlaying){if(window.speechSynthesis)speechSynthesis.cancel();speakFrom(_bkIdx);}}
+function highlightSen(i){const old=document.querySelectorAll('#readerText .sen.on');for(let i=0;i<old.length;i++)old[i].classList.remove('on');const el=document.querySelector('#readerText .sen[data-i="'+i+'"]');if(el){el.classList.add('on');_bkGuard=true;const tv=document.getElementById('readerText');tv.scrollTop=el.offsetTop-tv.clientHeight/2;setTimeout(function(){_bkGuard=false;},400);}}
+function updateBookProgress(p){if(_bkCur)_bkCur.progress=Math.max(_bkCur.progress||0,p||0);const lp=document.getElementById('readerProg');if(lp)lp.textContent=Math.round((p||0)*100)+'%';if(_bkSaveT)clearTimeout(_bkSaveT);_bkSaveT=setTimeout(function(){const lib=getBookLib();const b=lib.find(function(x){return x.id===_bkCur.id;});if(b)b.progress=_bkCur.progress;saveBookLib(lib);},800);}
+function bkFont(d){_bkFs=Math.max(14,Math.min(30,_bkFs+d));const tv=document.getElementById('readerText');if(tv)tv.style.fontSize=_bkFs+'px';const fs=document.getElementById('bkFs');if(fs)fs.textContent=_bkFs;saveReaderPrefs();}
+function bkTheme(){const ts=['day','sepia','night'];_bkTheme=ts[(ts.indexOf(_bkTheme)+1)%3];const r=document.getElementById('reader');if(r)r.className='reader theme-'+_bkTheme;saveReaderPrefs();}
+function openReader(book){
+ _bkCur=book;_bkPlaying=false;_bkPaused=false;
+ const prefs=loadReaderPrefs();_bkFs=prefs.fs;_bkTheme=prefs.theme;_bkRate=prefs.rate;
+ const text=book.text||'';_bkSents=splitSents(text);
+ const paras=text.split(/\n+/);let gi=0;
+ const html=paras.map(function(p){if(!p.trim())return '';const spans=splitSents(p).map(function(s){const idx=gi++;return '<span class="sen" data-i="'+idx+'">'+esc(s)+'</span>';}).join('');return '<p>'+spans+'</p>';}).join('');
+ const r=document.getElementById('reader');
+ r.className='reader theme-'+_bkTheme;
+ r.querySelector('#readerTitle').textContent=book.title;
+ r.querySelector('#readerAuthor').textContent=book.author?('文 / '+book.author):'';
+ const tv=document.getElementById('readerText');tv.innerHTML=html;tv.style.fontSize=_bkFs+'px';
+ const fs=document.getElementById('bkFs');if(fs)fs.textContent=_bkFs;
+ const goEl=document.getElementById('readerGo');
+ if(book.url){goEl.style.display='';goEl.textContent='去原站 ↗';goEl.onclick=function(){window.open(book.url,'_blank');};}else{goEl.style.display='none';}
+ const prog=book.progress||0;
+ if(_bkSents.length)_bkIdx=Math.min(_bkSents.length-1,Math.floor(prog*_bkSents.length));
+ r.classList.add('show');
+ setRate(_bkRate);setPlayUI(false);
+ requestAnimationFrame(function(){const max=tv.scrollHeight-tv.clientHeight;tv.scrollTop=max>0?prog*max:0;});
+ tv.onscroll=function(){if(_bkGuard)return;const max=tv.scrollHeight-tv.clientHeight;const p=max>0?tv.scrollTop/max:0;updateBookProgress(p);};
+}
+function closeReader(){if(window.speechSynthesis)speechSynthesis.cancel();_bkPlaying=false;_bkPaused=false;document.getElementById('reader').classList.remove('show');if(_bkCur){const lib=getBookLib();const b=lib.find(function(x){return x.id===_bkCur.id;});if(b)b.progress=_bkCur.progress;saveBookLib(lib);}renderBooks();_bkCur=null;}
+</script>
 </head>
 <body>
 <div class="app" id="app">
@@ -543,7 +662,7 @@ a.link{color:var(--primary-dark);text-decoration:underline;font-weight:600;}
       <a class="nav-item" data-page="aigc"><span class="nav-icon" style="background:#EDE4FF">🎨</span><span class="nav-text">AIGC学习</span></a>
       <a class="nav-item" data-page="english"><span class="nav-icon" style="background:#E0F0FB">📚</span><span class="nav-text">英语单词</span></a>
       <a class="nav-item" data-page="tweet"><span class="nav-icon" style="background:#FFE4EF">📣</span><span class="nav-text">推文外宣</span></a>
-      <a class="nav-item" data-page="podcast"><span class="nav-icon" style="background:#E4E8FB">🎧</span><span class="nav-text">每日播客</span></a>
+      <a class="nav-item" data-page="podcast"><span class="nav-icon" style="background:#E4E8FB">📚</span><span class="nav-text">听书读书</span></a>
       <div class="nav-label">创作与记录</div>
       <a class="nav-item" data-page="video"><span class="nav-icon" style="background:#F5E8FB">🎬</span><span class="nav-text">热点二创</span></a>
       <a class="nav-item" data-page="inspire"><span class="nav-icon" style="background:#FFF5D6">💡</span><span class="nav-text">选题灵感</span></a>
@@ -950,45 +1069,33 @@ a.link{color:var(--primary-dark);text-decoration:underline;font-weight:600;}
       </div>
     </section>
 
-    <!-- ===== 每日播客 ===== -->
+    <!-- ===== 听书读书 ===== -->
     <section class="page t-podcast" id="page-podcast">
       <div class="banner theme-grad">
-        <h2>每日播客 🎧</h2>
-        <p>用耳朵看世界，通勤也能成长～</p>
-        <span class="b-emoji">🎙️</span>
+        <h2>听书读书 📚</h2>
+        <p>能看能听，像番茄小说一样随身读～</p>
+        <span class="b-emoji">📖</span>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:12px;">
+        <button class="btn btn-primary" style="flex:1" onclick="openSheet('book')">＋ 添加书籍</button>
+        <button class="btn btn-soft" style="flex:1" onclick="go('podcast')">🔄 刷新书架</button>
       </div>
       <div class="card">
-        <div class="card-title"><span class="ct-icon theme-bg">▶️</span>正在收听</div>
-        <div style="display:flex;gap:14px;align-items:center;">
-          <div style="width:64px;height:64px;border-radius:16px;background:linear-gradient(135deg,#98A8F0,#B5C0F5);display:flex;align-items:center;justify-content:center;font-size:30px;flex-shrink:0;">🎧</div>
-          <div style="flex:1;"><div style="font-weight:700;font-size:15px;">如何建立深度专注力</div><div style="font-size:12px;color:var(--text-light);margin-top:2px;">认知充电 · 32分钟</div><div class="progress" style="margin-top:8px;"><span style="width:42%;background:#98A8F0"></span></div><div style="font-size:11px;color:var(--text-light);margin-top:3px;">13:24 / 32:00</div></div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-title"><span class="ct-icon theme-bg">💪</span>女生自律与成长</div>
-        <div class="list-item"><span class="li-icon theme-bg">⚡</span><div class="li-main"><div class="li-title">搞钱女孩</div><div class="li-sub">女生搞钱实战分享 · 周四更新</div></div><span class="pill theme-bg theme-text">订阅</span></div>
-        <div class="list-item"><span class="li-icon theme-bg">🌱</span><div class="li-main"><div class="li-title">自律修炼手册</div><div class="li-sub">如何养成自律习惯</div></div><span class="pill theme-bg theme-text">订阅</span></div>
-        <div class="list-item"><span class="li-icon theme-bg">🚀</span><div class="li-main"><div class="li-title">女生快速成长指南</div><div class="li-sub">认知升级 · 破圈方法</div></div><span class="pill theme-bg theme-text">订阅</span></div>
-      </div>
-      <div class="card">
-        <div class="card-title"><span class="ct-icon theme-bg">💛</span>情商与人际</div>
-        <div class="list-item"><span class="li-icon theme-bg">🧠</span><div class="li-main"><div class="li-title">高情商沟通术</div><div class="li-sub">如何高效交流·说话的艺术</div></div><span class="pill theme-bg theme-text">订阅</span></div>
-        <div class="list-item"><span class="li-icon theme-bg">🤝</span><div class="li-main"><div class="li-title">人际关系必修课</div><div class="li-sub">做人·处事·边界感</div></div><span class="pill theme-bg theme-text">订阅</span></div>
-        <div class="list-item"><span class="li-icon theme-bg">💡</span><div class="li-main"><div class="li-title">社会心理学</div><div class="li-sub">理解人性·提升认知</div></div><span class="pill theme-bg theme-text">订阅</span></div>
-      </div>
-      <div class="card">
-        <div class="card-title"><span class="ct-icon theme-bg">📈</span>历史·政治·财经</div>
-        <div class="list-item"><span class="li-icon theme-bg">📜</span><div class="li-main"><div class="li-title">历史的温度</div><div class="li-sub">以史为鉴·开阔格局</div></div><span class="pill theme-bg theme-text">订阅</span></div>
-        <div class="list-item"><span class="li-icon theme-bg">🏛️</span><div class="li-main"><div class="li-title">硬核政治科普</div><div class="li-sub">看懂世界运行逻辑</div></div><span class="pill theme-bg theme-text">订阅</span></div>
-        <div class="list-item"><span class="li-icon theme-bg">💹</span><div class="li-main"><div class="li-title">财经早知道</div><div class="li-sub">每天5分钟懂经济</div></div><span class="pill theme-bg theme-text">订阅</span></div>
-      </div>
-      <div class="card">
-        <div class="card-title"><span class="ct-icon theme-bg">✅</span>本周已听</div>
+        <div class="card-title"><span class="ct-icon theme-bg">📊</span>我的阅读</div>
         <div class="grid grid-3">
-          <div class="stat"><div class="stat-num theme-text">5</div><div class="stat-label">期</div></div>
-          <div class="stat"><div class="stat-num theme-text">2.4</div><div class="stat-label">小时</div></div>
-          <div class="stat"><div class="stat-num theme-text">14</div><div class="stat-label">条笔记</div></div>
+          <div class="stat"><div class="stat-num theme-text" id="bkTotal">0</div><div class="stat-label">本藏书</div></div>
+          <div class="stat"><div class="stat-num theme-text" id="bkReading">0</div><div class="stat-label">在读</div></div>
+          <div class="stat"><div class="stat-num theme-text" id="bkDone">0</div><div class="stat-label">读完</div></div>
         </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="ct-icon theme-bg">📚</span>我的书架</div>
+        <div id="bookShelf" class="book-grid"></div>
+        <div id="bookEmpty" class="tip-card theme-bg" style="font-size:13px;display:none;">书架空空～ 点上方「＋ 添加书籍」粘贴正文或导入 txt，也可填外部链接一键跳去原站读听。</div>
+      </div>
+      <div class="tip-card theme-bg" style="font-size:12px;line-height:1.7;">
+        💡 有正文的书：在 App 内翻页阅读 + 一键语音听书（离线也能听）。<br>
+        💡 只填了外部链接的书：点「去原站 ↗」直接跳到番茄小说 / 微信读书等平台读听。
       </div>
     </section>
 
@@ -1290,8 +1397,8 @@ a.link{color:var(--primary-dark);text-decoration:underline;font-weight:600;}
 
 <script>
 /* ============ 数据 ============ */
-const PAGE_TITLES={home:'小魏工作台',fitness:'健身打卡',diet:'轻食日记',aigc:'AIGC学习',english:'英语单词',tweet:'推文外宣',money:'记账本',makeup:'美妆护肤',dress:'穿搭日记',tcm:'中医养生',podcast:'每日播客',memo:'成长总结',video:'热点二创',inspire:'选题灵感',period:'经期记录',anniv:'纪念日'};
-const QUICK=[{p:'fitness',e:'🏃',n:'健身'},{p:'diet',e:'🥗',n:'饮食'},{p:'tcm',e:'🌿',n:'中医'},{p:'makeup',e:'💄',n:'美妆'},{p:'dress',e:'👗',n:'穿搭'},{p:'aigc',e:'🤖',n:'AIGC'},{p:'english',e:'📖',n:'英语'},{p:'tweet',e:'📢',n:'推文'},{p:'podcast',e:'🎧',n:'播客'},{p:'period',e:'🩸',n:'经期'},{p:'anniv',e:'💝',n:'纪念'},{p:'memo',e:'📊',n:'总结'},{p:'video',e:'🎬',n:'热点'},{p:'inspire',e:'💡',n:'选题'},{p:'money',e:'💰',n:'记账'}];
+const PAGE_TITLES={home:'小魏工作台',fitness:'健身打卡',diet:'轻食日记',aigc:'AIGC学习',english:'英语单词',tweet:'推文外宣',money:'记账本',makeup:'美妆护肤',dress:'穿搭日记',tcm:'中医养生',podcast:'听书读书',memo:'成长总结',video:'热点二创',inspire:'选题灵感',period:'经期记录',anniv:'纪念日'};
+const QUICK=[{p:'fitness',e:'🏃',n:'健身'},{p:'diet',e:'🥗',n:'饮食'},{p:'tcm',e:'🌿',n:'中医'},{p:'makeup',e:'💄',n:'美妆'},{p:'dress',e:'👗',n:'穿搭'},{p:'aigc',e:'🤖',n:'AIGC'},{p:'english',e:'📖',n:'英语'},{p:'tweet',e:'📢',n:'推文'},{p:'podcast',e:'📚',n:'听书'},{p:'period',e:'🩸',n:'经期'},{p:'anniv',e:'💝',n:'纪念'},{p:'memo',e:'📊',n:'总结'},{p:'video',e:'🎬',n:'热点'},{p:'inspire',e:'💡',n:'选题'},{p:'money',e:'💰',n:'记账'}];
 const MEMO_COLORS=['#FFE4EF','#DFF8ED','#EDE4FF','#E0F0FB','#FFF5D6','#FFEDE0','#FDF0D8','#E4E8FB'];
 
 /* ========== 多设备同步层（离线优先 + 时间戳合并） ========== */
@@ -2033,7 +2140,7 @@ function init(){
   if(h<6)hi.textContent='夜深了，小魏 🌙';else if(h<11)hi.textContent='早上好，小魏 🌅';
   else if(h<14)hi.textContent='中午好，小魏 ☀️';else if(h<18)hi.textContent='下午好，小魏 ☕';else if(h<22)hi.textContent='晚上好，小魏 🌆';else hi.textContent='夜深了，小魏 🌙';
   document.getElementById('quickGrid').innerHTML=QUICK.map(q=>`<div class="quick-item" onclick="go('${q.p}')"><div class="qi-emoji">${q.e}</div><div class="qi-label">${q.n}</div></div>`).join('');
-  renderSummary();renderFit();renderMakeup();renderDress();renderAigc();renderEn();renderTweet();renderMoney();renderPeriod();renderAnnivs();renderInspire();renderRecipeLib();showDietTip(0);renderVideoPage();renderInspireLinks();renderConstitution();renderSeasonalTips();
+  renderSummary();renderFit();renderMakeup();renderDress();renderAigc();renderEn();renderTweet();renderMoney();renderPeriod();renderAnnivs();renderInspire();renderRecipeLib();showDietTip(0);renderVideoPage();renderInspireLinks();renderConstitution();renderSeasonalTips();renderBooks();
   bindEvents();
   initHomeCarousel();
 }
@@ -2051,6 +2158,7 @@ function go(page){
   if(page==='fitness'){renderFit();setTimeout(function(){drawMeasChart();},100);}
   if(page==='anniv')renderAnnivs();
   if(page==='period')renderPeriod();
+  if(page==='podcast')renderBooks();
 }
 
 /* ============ 成长总结（日/月/年 + 打卡统计） ============ */
@@ -4394,6 +4502,7 @@ function openSheet(mode){
     <div class="field"><label>颜色</label><select id="wdColor" style="width:100%;border:1.5px solid var(--border);border-radius:12px;padding:10px;outline:none;">${WD_COLORS.map(c=>`<option>${c}</option>`).join('')}</select></div></div>
     <div class="field"><label>适合季节</label><select id="wdSeason" style="width:100%;border:1.5px solid var(--border);border-radius:12px;padding:10px;outline:none;">${WD_SEASONS.map(s=>`<option ${s==='通用'?'selected':''}>${s}</option>`).join('')}</select></div>
     <div class="field"><label>备注（品牌/尺码等）</label><input id="wdNote" placeholder="如 UNIQLO M码"></div>`;}
+  else if(mode==='book'){title.textContent='添加书籍';body.innerHTML=`<div class="field"><label>书名 *</label><input id="bkTitle" placeholder="如 小王子、我的读书笔记"></div><div class="row"><div class="field" style="flex:1"><label>作者</label><input id="bkAuthor" placeholder="可选"></div><div class="field" style="flex:0 0 84px"><label>封面</label><input id="bkEmoji" value="📖" maxlength="2" style="text-align:center;font-size:20px;"></div></div><div class="field"><label>正文（粘贴文字，或导入 txt）<span style="float:right;color:var(--primary);font-size:12px;cursor:pointer;" onclick="document.getElementById('bkFile').click()">📂 导入txt</span></label><textarea id="bkText" placeholder="把书的正文粘贴到这里，就能在 App 内阅读 + 语音听书…" style="min-height:120px;"></textarea><input type="file" id="bkFile" accept=".txt,text/plain" hidden onchange="onBookFile(event)"></div><div class="field"><label>外部链接（可选，点「去原站」跳去平台读听）</label><input id="bkUrl" placeholder="https://fanqienovel.com/... 或微信读书链接"></div>`;}
   document.getElementById('sheet').classList.add('open');
   setTimeout(()=>{const i=document.querySelector('#sheetBody input,#sheetBody textarea');if(i)i.focus();},300);
 }
@@ -4415,6 +4524,7 @@ function saveSheet(){
   else if(sheetMode==='dressProfile'){DB.dress.bodyType=document.getElementById('dpBody').value;DB.dress.style=document.getElementById('dpStyle').value;DB.dress.issues=[...document.querySelectorAll('#dpIssues .issue-tag.sel')].map(e=>e.dataset.v);save('dress',DB.dress);renderDress();toast('穿搭档案已保存 👗');}
   else if(sheetMode==='dressLink'){const t=document.getElementById('dlTitle').value.trim(),u=document.getElementById('dlUrl').value.trim(),p=document.getElementById('dlPlat').value,n=document.getElementById('dlNote').value.trim();if(!t||!u){toast('请填写标题和链接');return;}DB.dress.links.unshift({title:t,url:u,plat:p,note:n});save('dress',DB.dress);renderDressLinks();toast('穿搭链接已收藏 ⭐');}
   else if(sheetMode==='wardrobeAdd'){saveWardrobeItem();return;}
+  else if(sheetMode==='book'){const t=document.getElementById('bkTitle').value.trim();if(!t){toast('请填写书名');return;}const lib=getBookLib();lib.unshift({id:'b'+Date.now(),title:t,author:document.getElementById('bkAuthor').value.trim(),emoji:document.getElementById('bkEmoji').value.trim()||'📖',text:document.getElementById('bkText').value,url:document.getElementById('bkUrl').value.trim(),progress:0,addedAt:Date.now()});saveBookLib(lib);renderBooks();toast('书籍已添加 📚');}
   closeSheet();
 }
 
@@ -4613,5 +4723,32 @@ if('serviceWorker' in navigator){
   });
 }
 </script>
+<div class="reader" id="reader">
+  <div class="reader-top">
+    <div class="rt-back" onclick="closeReader()">✕</div>
+    <div class="rt-title" id="readerTitle"></div>
+    <div class="rt-tools"><span onclick="bkTheme()">🌓</span><span id="readerAuthor"></span></div>
+  </div>
+  <div id="readerText"></div>
+  <div class="reader-foot">
+    <button class="rf-play" id="rfPlay" onclick="togglePlay()">▶️</button>
+    <div class="rf-mid">
+      <div class="rf-rates">
+        <span class="rate-btn" data-r="0.8" onclick="setRate(0.8)">0.8x</span>
+        <span class="rate-btn" data-r="1" onclick="setRate(1)">1x</span>
+        <span class="rate-btn" data-r="1.2" onclick="setRate(1.2)">1.2x</span>
+        <span class="rate-btn" data-r="1.5" onclick="setRate(1.5)">1.5x</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:6px;">
+        <span class="rf-prog" id="readerProg">0%</span>
+        <span style="font-size:12px;color:var(--text-light);">字号</span>
+        <span style="cursor:pointer;font-size:13px;padding:2px 8px;border-radius:8px;background:rgba(0,0,0,.06);" onclick="bkFont(-1)">A-</span>
+        <span id="bkFs" style="font-size:12px;">18</span>
+        <span style="cursor:pointer;font-size:16px;padding:2px 8px;border-radius:8px;background:rgba(0,0,0,.06);" onclick="bkFont(1)">A+</span>
+      </div>
+    </div>
+    <div id="readerGo" style="display:none;"></div>
+  </div>
+</div>
 </body>
 </html>
