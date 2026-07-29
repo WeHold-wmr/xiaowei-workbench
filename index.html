@@ -1206,15 +1206,13 @@ const FIT_GUIDE={
     {n:'运动后拉伸放松',d:'10分钟',lv:'入门',kw:'运动后拉伸放松跟练'},
     {n:'睡前拉伸助眠跟练',d:'12分钟',lv:'入门',kw:'睡前拉伸助眠跟练'}]
 };
-function videoSearch(kw){return 'https://www.baidu.com/s?wd=site%3Axiaohongshu.com%20'+encodeURIComponent(kw);}
-
 /* ============ 多平台搜索 ============ */
 const PLATFORMS=[
-  {key:'xhs',name:'小红书',icon:'📕',url:'https://www.baidu.com/s?wd=site%3Axiaohongshu.com%20'},
-  {key:'douyin',name:'抖音',icon:'🎵',url:'https://www.douyin.com/search/'},
-  {key:'bilibili',name:'B站',icon:'📺',url:'https://search.bilibili.com/all?keyword='},
-  {key:'kuaishou',name:'快手',icon:'⚡',url:'https://www.kuaishou.com/search/video?searchKey='},
-  {key:'youtube',name:'YouTube',icon:'▶️',url:'https://www.youtube.com/results?search_query='}
+  {key:'xhs',name:'小红书',icon:'📕',url:'xhsdiscover://search/result?keyword=',fallback:'https://www.xiaohongshu.com/search_result?keyword='},
+  {key:'douyin',name:'抖音',icon:'🎵',url:'snssdk1128://search?keyword=',fallback:'https://www.douyin.com/search/'},
+  {key:'bilibili',name:'B站',icon:'📺',url:'bilibili://search?keyword=',fallback:'https://search.bilibili.com/all?keyword='},
+  {key:'kuaishou',name:'快手',icon:'⚡',url:'kwai://search?keyword=',fallback:'https://www.kuaishou.com/search/video?searchKey='},
+  {key:'youtube',name:'YouTube',icon:'▶️',url:'youtube://www.youtube.com/results?search_query=',fallback:'https://www.youtube.com/results?search_query='}
 ];
 function platUrl(p,kw){return p.url+encodeURIComponent(kw);}
 /* 三平台可选按钮（小红书 / 抖音 / B站），用于跟练、看做法、穿搭视频等单入口场景 */
