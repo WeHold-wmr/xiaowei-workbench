@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: xiaowei-workbench
+    runtime: node
+    plan: free
+    branch: main
+    buildCommand: ""
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+    healthCheckPath: /api/ping
