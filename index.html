@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23FFF5F8'/><text x='50' y='65' text-anchor='middle' font-size='50'>🐱</text></svg>">
 <meta name="theme-color" content="#FFF5F8">
-<link rel="manifest" href="/manifest.json">
+<link rel="manifest" href="manifest.json">
 <title>小魏工作台</title>
 <style>
 /* ============ 淡蓝 + 多巴胺配色 ============ */
@@ -4597,7 +4597,7 @@ if('serviceWorker' in navigator){
     if (w) w.postMessage({ type: 'SKIP_WAITING' });
   }
   window.addEventListener('load', function(){
-    navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).then(function(reg){
+    navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(function(reg){
       console.log('SW registered:', reg.scope);
 
       // If an update is already waiting, activate it now
