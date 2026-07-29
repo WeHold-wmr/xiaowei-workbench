@@ -273,7 +273,9 @@ input,textarea,select{font-family:inherit;font-size:14px;}
 .t-makeup{--c:#FFADC6;--cs:#FFE4EF;}
 .t-dress{--c:#D4A5E8;--cs:#F4E8FB;}
 .t-tcm{--c:#8ED4A8;--cs:#E0F5E8;}
-.t-podcast{--c:#98A8F0;--cs:#E4E8FB;}
+.t-period{--c:#FF7B93;--cs:#FFF0F3;}
+.t-anniv{--c:#9BB8FF;--cs:#EBF0FF;}
+/* 经期/纪念日公用 */.t-podcast{--c:#98A8F0;--cs:#E4E8FB;}
 .t-memo{--c:#F5C880;--cs:#FDF0D8;}
 .t-video{--c:#DCA0F0;--cs:#F5E8FB;}
 .t-inspire{--c:#FFCD60;--cs:#FFF5D6;}
@@ -364,6 +366,82 @@ input,textarea,select{font-family:inherit;font-size:14px;}
 
 .tag-cloud{display:flex;flex-wrap:wrap;gap:8px;}
 .tag-cloud .tag{padding:7px 14px;border-radius:20px;font-size:13px;font-weight:600;background:var(--bg-soft);color:var(--text);}
+.diet-tip-tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.diet-tip-tabs::-webkit-scrollbar{display:none;}
+.diet-tip-tab{padding:8px 14px;border-radius:18px;font-size:13px;font-weight:600;white-space:nowrap;border:1.5px solid var(--border);background:var(--bg);color:var(--text-light);transition:all .2s;flex-shrink:0;}
+.diet-tip-tab.active{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 4px 14px rgba(240,160,192,0.3);}
+.diet-tip-content{animation:fadeIn .3s;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.diet-kw-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;}
+.diet-kw-tag{padding:5px 12px;border-radius:14px;font-size:12px;font-weight:600;white-space:nowrap;}
+.diet-kw-tag.good{background:#E8F8E0;color:#4A9E3F;}
+.diet-kw-tag.bad{background:#FFEEEE;color:#D45454;}
+.diet-kw-tag.info{background:var(--primary-soft);color:var(--primary-dark);}
+.diet-kw-tag.warn{background:#FFF3E0;color:#E88D2A;}
+.diet-section-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px;margin-top:12px;}
+.diet-section-title:first-child{margin-top:0;}
+.period-level-btn{padding:6px 10px;border-radius:16px;font-size:12px;font-weight:600;border:1.5px solid var(--border);background:#fff;color:var(--text);cursor:pointer;transition:all .15s;flex-shrink:0;}
+.period-level-btn:hover,.period-level-btn.sel{background:var(--primary-soft);border-color:var(--primary);color:var(--primary-dark);}
+.period-score{text-align:center;padding:16px;}
+.period-score .big{font-size:48px;font-weight:800;}
+.period-score .label{font-size:13px;color:var(--text-light);margin-top:4px;}
+.anniv-card{background:var(--card);border-radius:18px;padding:14px 16px;box-shadow:var(--shadow-soft);margin-bottom:12px;position:relative;display:flex;align-items:center;gap:12px;}
+.anniv-card .icon{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.anniv-card .info{flex:1;min-width:0;}
+.anniv-card .name{font-size:15px;font-weight:700;color:var(--text);}
+.anniv-card .sub{font-size:12px;color:var(--text-light);}
+.anniv-card .countdown{text-align:right;flex-shrink:0;}
+.anniv-card .days{font-size:22px;font-weight:800;color:var(--primary-dark);}
+.anniv-card .days-label{font-size:11px;color:var(--text-light);}
+.anniv-card .badge{display:inline-block;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:700;margin-top:4px;}
+.anniv-card .badge.milestone{background:#FFE0E8;color:#FF7B93;}
+.anniv-card .badge.soon{background:#FFF3E0;color:#E88D2A;}
+.anniv-card .badge.birthday{background:#E8F0FF;color:#5B8DEF;}
+.anniv-card .del-btn{position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:50%;background:var(--bg-soft);border:none;color:var(--text-faint);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.anniv-card .del-btn:hover{background:#FFE0E0;color:#E88;}
+/* 纪念日详情页 */
+.anniv-detail{display:none;}
+.anniv-detail.show{display:block;}
+.anniv-back-bar{display:flex;align-items:center;gap:10px;padding:12px 0;cursor:pointer;margin-bottom:12px;}
+.anniv-back-bar .back-arrow{font-size:24px;color:var(--primary-dark);}
+.anniv-back-bar .back-label{font-size:14px;font-weight:600;color:var(--text);}
+.anniv-profile-header{text-align:center;padding:16px 0 12px;}
+.anniv-profile-header .profile-icon{font-size:48px;margin-bottom:6px;}
+.anniv-profile-header .profile-name{font-size:20px;font-weight:800;color:var(--text);}
+.anniv-profile-header .profile-sub{font-size:12px;color:var(--text-light);margin-top:2px;}
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;max-height:420px;overflow-y:auto;padding-right:2px;}
+.photo-grid .photo-item{aspect-ratio:1;border-radius:14px;overflow:hidden;position:relative;background:var(--bg-soft);cursor:pointer;}
+.photo-grid .photo-item img{width:100%;height:100%;object-fit:cover;transition:transform .2s;}
+.photo-grid .photo-item:active img{transform:scale(1.05);}
+.photo-item .video-badge{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;pointer-events:none;z-index:1;}
+.photo-item .media-type{position:absolute;bottom:2px;right:4px;font-size:9px;color:#fff;background:rgba(0,0,0,0.5);padding:1px 5px;border-radius:6px;z-index:1;pointer-events:none;}
+.photo-grid .photo-item .photo-del{position:absolute;top:4px;right:4px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,0.5);border:none;color:#fff;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2;}
+.photo-grid .photo-item .photo-del:hover{background:rgba(255,0,0,0.7);}
+.photo-grid .photo-add{aspect-ratio:1;border-radius:14px;border:2px dashed var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:var(--text-faint);font-size:12px;transition:all .2s;}
+.photo-grid .photo-add:hover{border-color:var(--primary);color:var(--primary);}
+.photo-grid .photo-add .add-icon{font-size:24px;margin-bottom:2px;}
+/* 照片大图浮层 */
+.photo-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.92);z-index:999;align-items:center;justify-content:center;flex-direction:column;}
+.photo-overlay.show{display:flex;}
+.photo-overlay img{max-width:95vw;max-height:80vh;border-radius:14px;object-fit:contain;}
+.photo-overlay .photo-close{position:absolute;top:20px;right:20px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.2);border:none;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.photo-overlay .photo-prev,.photo-overlay .photo-next{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.2);border:none;color:#fff;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.photo-overlay .photo-prev{left:10px;}
+.photo-overlay .photo-next{right:10px;}
+.photo-overlay .photo-counter{color:rgba(255,255,255,0.6);font-size:13px;margin-top:12px;}
+/* 每日测量 */
+.meas-quick-input{transition:border-color .2s;}
+.meas-quick-input:focus{border-color:var(--primary);}
+.meas-legend-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:middle;}
+#measChart{border:1px solid var(--border);background:var(--card);}
+#measLegend .legend-item{font-size:11px;padding:2px 8px;border-radius:10px;cursor:pointer;background:var(--bg-soft);color:var(--text-light);}
+#measLegend .legend-item.active{background:var(--primary-soft);color:var(--primary-dark);font-weight:600;}
+.anniv-textarea{width:100%;min-height:80px;border:1.5px solid var(--border);border-radius:14px;padding:12px;outline:none;font-size:14px;font-family:inherit;resize:vertical;background:var(--card);color:var(--text);line-height:1.6;}
+.anniv-textarea:focus{border-color:var(--primary);}
+.anniv-section{margin-bottom:16px;}
+.anniv-section .section-label{font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.anniv-section .section-label .s-icon{font-size:18px;}
+.anniv-save-hint{font-size:11px;color:var(--text-faint);text-align:right;margin-top:4px;font-style:italic;}
 .issue-tag{padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;background:var(--bg-soft);color:var(--text-light);border:1.5px solid var(--border);cursor:pointer;user-select:none;transition:all .2s;}
 .issue-tag.sel{background:var(--theme);color:#fff;border-color:var(--theme);}
 
@@ -460,6 +538,7 @@ a.link{color:var(--primary-dark);text-decoration:underline;font-weight:600;}
       <a class="nav-item" data-page="tcm"><span class="nav-icon" style="background:#E0F5E8">🍵</span><span class="nav-text">中医养生</span></a>
       <a class="nav-item" data-page="makeup"><span class="nav-icon" style="background:#FFE4EF">💄</span><span class="nav-text">美妆护肤</span></a>
       <a class="nav-item" data-page="dress"><span class="nav-icon" style="background:#F4E8FB">👗</span><span class="nav-text">穿搭日记</span></a>
+      <a class="nav-item" data-page="period"><span class="nav-icon" style="background:#FFF0F3">🩸</span><span class="nav-text">经期记录</span></a>
       <div class="nav-label">学习成长</div>
       <a class="nav-item" data-page="aigc"><span class="nav-icon" style="background:#EDE4FF">🎨</span><span class="nav-text">AIGC学习</span></a>
       <a class="nav-item" data-page="english"><span class="nav-icon" style="background:#E0F0FB">📚</span><span class="nav-text">英语单词</span></a>
@@ -470,6 +549,7 @@ a.link{color:var(--primary-dark);text-decoration:underline;font-weight:600;}
       <a class="nav-item" data-page="inspire"><span class="nav-icon" style="background:#FFF5D6">💡</span><span class="nav-text">选题灵感</span></a>
       <a class="nav-item" data-page="memo"><span class="nav-icon" style="background:#FDF0D8">📊</span><span class="nav-text">成长总结</span></a>
       <a class="nav-item" data-page="money"><span class="nav-icon" style="background:#FFF5D6">🧾</span><span class="nav-text">记账本</span></a>
+      <a class="nav-item" data-page="anniv"><span class="nav-icon" style="background:#EBF0FF">💝</span><span class="nav-text">纪念日</span></a>
     </nav>
     <div class="sidebar-foot">小魏工作台 · v2.0 精细版<br>用温柔的方式，过自律的生活</div>
   </aside>
@@ -571,6 +651,29 @@ a.link{color:var(--primary-dark);text-decoration:underline;font-weight:600;}
         <div id="fitCalendar"></div>
       </div>
       <div class="card">
+        <div class="card-title"><span class="ct-icon theme-bg">📏</span>每日身体测量 <span style="font-size:11px;color:var(--text-light);font-weight:400;" id="measCount"></span></div>
+        <div id="measQuickForm">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
+            <div><label style="font-size:11px;color:var(--text-light);">🌅 晨重(kg)</label><input id="mwMorning" type="number" step="0.1" placeholder="55.2" style="width:100%;border:1.5px solid var(--border);border-radius:10px;padding:8px;outline:none;font-size:14px;"></div>
+            <div><label style="font-size:11px;color:var(--text-light);">🌙 晚重(kg)</label><input id="mwEvening" type="number" step="0.1" placeholder="55.8" style="width:100%;border:1.5px solid var(--border);border-radius:10px;padding:8px;outline:none;font-size:14px;"></div>
+            <div><label style="font-size:11px;color:var(--text-light);">💪 臂围(cm)</label><input id="mwArm" type="number" step="0.1" placeholder="25" style="width:100%;border:1.5px solid var(--border);border-radius:10px;padding:8px;outline:none;font-size:14px;"></div>
+            <div><label style="font-size:11px;color:var(--text-light);">⏳ 腰围(cm)</label><input id="mwWaist" type="number" step="0.1" placeholder="68" style="width:100%;border:1.5px solid var(--border);border-radius:10px;padding:8px;outline:none;font-size:14px;"></div>
+            <div><label style="font-size:11px;color:var(--text-light);">🦵 大腿围(cm)</label><input id="mwThigh" type="number" step="0.1" placeholder="52" style="width:100%;border:1.5px solid var(--border);border-radius:10px;padding:8px;outline:none;font-size:14px;"></div>
+            <div><label style="font-size:11px;color:var(--text-light);">🦿 小腿围(cm)</label><input id="mwCalf" type="number" step="0.1" placeholder="34" style="width:100%;border:1.5px solid var(--border);border-radius:10px;padding:8px;outline:none;font-size:14px;"></div>
+          </div>
+          <button class="btn btn-primary btn-block" onclick="saveMeasurement()" style="background:var(--primary);">📝 记录今日数据</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="ct-icon theme-bg">📈</span>围度变化趋势
+          <select id="measChartMetric" onchange="drawMeasChart()" style="margin-left:auto;border:1.5px solid var(--border);border-radius:10px;padding:4px 8px;font-size:12px;outline:none;background:var(--bg);">
+            <option value="weight">体重</option><option value="arm">臂围</option><option value="waist">腰围</option><option value="thigh">大腿围</option><option value="calf">小腿围</option>
+          </select>
+        </div>
+        <canvas id="measChart" width="680" height="320" style="width:100%;max-width:100%;border-radius:12px;"></canvas>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;" id="measLegend"></div>
+      </div>
+      <div class="card">
         <div class="card-title"><span class="ct-icon theme-bg">📊</span>半月变化小结</div>
         <div id="fitSummary"></div>
       </div>
@@ -596,6 +699,16 @@ a.link{color:var(--primary-dark);text-decoration:underline;font-weight:600;}
       <div class="card">
         <div class="card-title"><span class="ct-icon theme-bg">📒</span>减脂轻食菜库 <span style="font-size:11px;color:var(--text-light);font-weight:400;">点击 + 添加食材到上方</span></div>
         <div class="tag-cloud" id="recipeLib"></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="ct-icon theme-bg">📖</span>饮食小知识</div>
+        <div class="diet-tip-tabs" id="dietTipTabs">
+          <button class="diet-tip-tab active" onclick="showDietTip(0)">🥦 减脂食物</button>
+          <button class="diet-tip-tab" onclick="showDietTip(1)">🍎 水果热量</button>
+          <button class="diet-tip-tab" onclick="showDietTip(2)">🌸 女生养护</button>
+          <button class="diet-tip-tab" onclick="showDietTip(3)">🌿 应季果蔬</button>
+        </div>
+        <div class="diet-tip-content" id="dietTipContent"></div>
       </div>
     </section>
 
@@ -1022,8 +1135,136 @@ a.link{color:var(--primary-dark);text-decoration:underline;font-weight:600;}
       </div>
       <button class="btn btn-accent btn-block" onclick="openSheet('money')">+ 记一笔</button>
     </section>
+    <!-- ===== 经期记录 ===== -->
+    <section class="page t-period" id="page-period">
+      <div class="banner theme-grad">
+        <h2>经期记录 🩸</h2>
+        <p>关爱自己，温柔记录每个月的那几天～</p>
+        <span class="b-emoji">🌸</span>
+      </div>
+      <div class="card" id="periodStatus"></div>
+      <div class="card">
+        <div class="card-title"><span class="ct-icon theme-bg">📅</span>本期记录</div>
+        <div class="form-row" style="display:flex;gap:10px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:100px;"><label style="font-size:12px;color:var(--text-light);">开始日期</label><input type="date" id="periodStart" style="width:100%;border:1.5px solid var(--border);border-radius:12px;padding:10px;outline:none;font-size:14px;"></div>
+          <div style="flex:1;min-width:100px;"><label style="font-size:12px;color:var(--text-light);">结束日期</label><input type="date" id="periodEnd" style="width:100%;border:1.5px solid var(--border);border-radius:12px;padding:10px;outline:none;font-size:14px;"></div>
+        </div>
+        <div style="margin-top:12px;">
+          <label style="font-size:12px;color:var(--text-light);margin-bottom:4px;display:block;">痛经程度</label>
+          <div style="display:flex;gap:8px;" id="periodPain">
+            <button class="period-level-btn" data-level="0">😊 不痛</button>
+            <button class="period-level-btn" data-level="1">😐 轻微</button>
+            <button class="period-level-btn" data-level="2">😣 酸痛</button>
+            <button class="period-level-btn" data-level="3">😖 很痛</button>
+            <button class="period-level-btn" data-level="4">🤒 剧痛</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:90px;">
+            <label style="font-size:12px;color:var(--text-light);">经量</label>
+            <select id="periodFlow" style="width:100%;border:1.5px solid var(--border);border-radius:12px;padding:10px;outline:none;font-size:14px;background:#fff;">
+              <option value="">选经量</option><option value="little">量少</option><option value="normal">正常</option><option value="much">量多</option>
+            </select>
+          </div>
+          <div style="flex:1;min-width:90px;">
+            <label style="font-size:12px;color:var(--text-light);">颜色</label>
+            <select id="periodColor" style="width:100%;border:1.5px solid var(--border);border-radius:12px;padding:10px;outline:none;font-size:14px;background:#fff;">
+              <option value="">选颜色</option><option value="bright">鲜红</option><option value="dark">暗红</option><option value="brown">褐色</option><option value="pink">淡粉</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top:12px;">
+          <label style="font-size:12px;color:var(--text-light);margin-bottom:4px;display:block;">其他感觉（选填）</label>
+          <input type="text" id="periodFeel" placeholder="如：腰酸、胸胀、情绪低落、头痛..." style="width:100%;border:1.5px solid var(--border);border-radius:12px;padding:10px;outline:none;font-size:14px;">
+        </div>
+        <button class="btn btn-primary btn-block" style="margin-top:14px;background:#FF7B93;" onclick="periodSave()">💾 保存本期记录</button>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="ct-icon theme-bg">📊</span>历次记录</div>
+        <div id="periodHistory"></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="ct-icon theme-bg">🍵</span>经期护理食谱</div>
+        <div class="tip-card theme-bg" id="periodFoods"></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="ct-icon theme-bg">💆‍♀️</span>经期护理小指南</div>
+        <div class="tip-card theme-bg" style="font-size:13px;line-height:1.8;">
+          🚫 <b>避免</b>：生冷食物、冰饮、咖啡、浓茶、辛辣刺激<br>
+          ✅ <b>多做</b>：热敷小腹、温水泡脚、轻柔瑜伽、充足睡眠<br>
+          🥤 <b>多喝</b>：温开水、红糖姜茶、桂圆红枣茶、玫瑰花茶<br>
+          ⚠️ <b>注意</b>：经期避免剧烈运动和游泳，保持心情愉快。如持续剧痛或经量异常，请及时就医。
+        </div>
+      </div>
+    </section>
+    <!-- ===== 纪念日 ===== -->
+    <section class="page t-anniv" id="page-anniv">
+      <div class="banner theme-grad">
+        <h2>纪念日 💝</h2>
+        <p>珍惜每一个值得纪念的日子～</p>
+        <span class="b-emoji">🎀</span>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="ct-icon theme-bg">📅</span>添加纪念日</div>
+        <div class="form-row" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
+          <input type="text" id="annivTitle" placeholder="名称，如：恋爱纪念日" style="flex:2;min-width:130px;border:1.5px solid var(--border);border-radius:12px;padding:10px;outline:none;font-size:14px;">
+          <select id="annivType" style="flex:1;min-width:90px;border:1.5px solid var(--border);border-radius:12px;padding:10px;outline:none;font-size:14px;background:#fff;">
+            <option value="anniversary">纪念日</option><option value="birthday">生日</option><option value="other">其他</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
+          <input type="date" id="annivDate" style="flex:1;min-width:120px;border:1.5px solid var(--border);border-radius:12px;padding:10px;outline:none;font-size:14px;">
+          <input type="text" id="annivWho" placeholder="对象（选填）：男朋友/妈妈/爸爸/姐姐" style="flex:2;min-width:130px;border:1.5px solid var(--border);border-radius:12px;padding:10px;outline:none;font-size:14px;">
+        </div>
+        <button class="btn btn-primary btn-block" style="background:#9BB8FF;" onclick="annivAdd()">💝 添加纪念日</button>
+      </div>
+      <div id="annivList"></div>
+      <!-- 个人详情页 -->
+      <div class="anniv-detail" id="annivDetail">
+        <div class="anniv-back-bar" onclick="annivBackToList()"><span class="back-arrow">←</span><span class="back-label">返回纪念日列表</span></div>
+        <div class="card">
+          <div class="anniv-profile-header">
+            <div class="profile-icon" id="annivProfileIcon">💝</div>
+            <div class="profile-name" id="annivProfileName"></div>
+            <div class="profile-sub" id="annivProfileSub"></div>
+          </div>
+        </div>
+        <div class="card anniv-section">
+          <div class="section-label"><span class="s-icon">📸</span>照片记忆 <span id="annivPhotoCount"></span></div>
+          <div class="photo-grid" id="annivPhotoGrid"></div>
+          <input type="file" accept="image/*,video/*" id="annivPhotoInput" style="display:none" onchange="annivAddMedia()">
+        </div>
+        <div class="card anniv-section">
+          <div class="section-label"><span class="s-icon">💬</span>碎碎念</div>
+          <textarea class="anniv-textarea" id="annivNotes" placeholder="写一些想对 ta 说的话，或者日常碎碎念...&#10;每次保存都会覆盖之前的内容哦~"></textarea>
+          <div class="anniv-save-hint">✏️ 编辑后点击下方保存</div>
+        </div>
+        <div class="card anniv-section">
+          <div class="section-label"><span class="s-icon">❤️</span>爱好 & 喜好</div>
+          <textarea class="anniv-textarea" id="annivHobbies" placeholder="ta 喜欢吃什么、玩什么、什么颜色的花...&#10;记录 ta 的点点滴滴~"></textarea>
+          <div class="anniv-save-hint">✏️ 编辑后点击下方保存</div>
+        </div>
+        <div class="card anniv-section">
+          <div class="section-label"><span class="s-icon">📝</span>其他信息</div>
+          <textarea class="anniv-textarea" id="annivOther" placeholder="生日提醒时间、喜欢的礼物、衣服尺码、重要备忘..."></textarea>
+          <div class="anniv-save-hint">✏️ 编辑后点击下方保存</div>
+        </div>
+        <button class="btn btn-primary btn-block" onclick="annivSaveProfile()" style="background:#FF9BB8;">💾 保存所有信息</button>
+        <div style="margin-bottom:20px;"></div>
+      </div>
+    </section>
 
   </main>
+
+  <!-- 照片大图浮层 -->
+  <div class="photo-overlay" id="photoOverlay" onclick="closePhotoView()">
+    <button class="photo-close" onclick="closePhotoView()">✕</button>
+    <button class="photo-prev" onclick="event.stopPropagation();navPhoto(-1)">◀</button>
+    <img id="photoOverlayImg" src="" alt="" style="display:none;" onclick="event.stopPropagation()">
+    <video id="photoOverlayVid" controls style="display:none;max-width:95vw;max-height:70vh;border-radius:14px;" onclick="event.stopPropagation()"></video>
+    <button class="photo-next" onclick="event.stopPropagation();navPhoto(1)">▶</button>
+    <div class="photo-counter" id="photoCounter"></div>
+  </div>
 
   <!-- 底部栏 -->
   <div class="dock">
@@ -1049,8 +1290,8 @@ a.link{color:var(--primary-dark);text-decoration:underline;font-weight:600;}
 
 <script>
 /* ============ 数据 ============ */
-const PAGE_TITLES={home:'小魏工作台',fitness:'健身打卡',diet:'轻食日记',aigc:'AIGC学习',english:'英语单词',tweet:'推文外宣',money:'记账本',makeup:'美妆护肤',dress:'穿搭日记',tcm:'中医养生',podcast:'每日播客',memo:'成长总结',video:'热点二创',inspire:'选题灵感'};
-const QUICK=[{p:'fitness',e:'🏃',n:'健身'},{p:'diet',e:'🥗',n:'饮食'},{p:'tcm',e:'🌿',n:'中医'},{p:'makeup',e:'💄',n:'美妆'},{p:'dress',e:'👗',n:'穿搭'},{p:'aigc',e:'🤖',n:'AIGC'},{p:'english',e:'📖',n:'英语'},{p:'tweet',e:'📢',n:'推文'},{p:'podcast',e:'🎧',n:'播客'},{p:'memo',e:'📊',n:'总结'},{p:'video',e:'🎬',n:'热点'},{p:'inspire',e:'💡',n:'选题'},{p:'money',e:'💰',n:'记账'}];
+const PAGE_TITLES={home:'小魏工作台',fitness:'健身打卡',diet:'轻食日记',aigc:'AIGC学习',english:'英语单词',tweet:'推文外宣',money:'记账本',makeup:'美妆护肤',dress:'穿搭日记',tcm:'中医养生',podcast:'每日播客',memo:'成长总结',video:'热点二创',inspire:'选题灵感',period:'经期记录',anniv:'纪念日'};
+const QUICK=[{p:'fitness',e:'🏃',n:'健身'},{p:'diet',e:'🥗',n:'饮食'},{p:'tcm',e:'🌿',n:'中医'},{p:'makeup',e:'💄',n:'美妆'},{p:'dress',e:'👗',n:'穿搭'},{p:'aigc',e:'🤖',n:'AIGC'},{p:'english',e:'📖',n:'英语'},{p:'tweet',e:'📢',n:'推文'},{p:'podcast',e:'🎧',n:'播客'},{p:'period',e:'🩸',n:'经期'},{p:'anniv',e:'💝',n:'纪念'},{p:'memo',e:'📊',n:'总结'},{p:'video',e:'🎬',n:'热点'},{p:'inspire',e:'💡',n:'选题'},{p:'money',e:'💰',n:'记账'}];
 const MEMO_COLORS=['#FFE4EF','#DFF8ED','#EDE4FF','#E0F0FB','#FFF5D6','#FFEDE0','#FDF0D8','#E4E8FB'];
 
 /* ========== 多设备同步层（离线优先 + 时间戳合并） ========== */
@@ -1166,7 +1407,7 @@ window.addEventListener('offline',function(){_wasOnline=false;_setDot('err','离
 let DB={
   memo:load('memo',[]),
   dailyLog:load('dailyLog',{}),
-  fit:load('fit',{photos:[],profile:{height:'',weight:'',goal:''},issues:[],records:[],checkins:{},customGuides:[]}),
+  fit:load('fit',{photos:[],profile:{height:'',weight:'',goal:''},issues:[],records:[],checkins:{},customGuides:[],measurements:[]}),
   makeupNotes:load('makeupNotes',[]),
   makeup:load('makeup',{stageNotes:{}}),
   aigc:load('aigc',{progress:[0,0,0,0,0],notes:[]}),
@@ -1188,7 +1429,10 @@ let DB={
     {tag:'推文外宣',title:'AI生成画面做小说推文',desc:'用AIGC课学的即梦/可灵生成推文配图，画面统一有风格，效率高。',color:3}
   ]),
   inspireLinks:load('inspireLinks',[]),
-  dress:load('dress',{bodyType:'',issues:[],style:'',links:[],wardrobe:[]})
+  dress:load('dress',{bodyType:'',issues:[],style:'',links:[],wardrobe:[]}),
+  periodRecords:load('periodRecords',[]),
+  annivs:load('annivs',[]),
+  annivProfiles:load('annivProfiles',{})
 };
 let sheetMode='memo';
 // 待办清单默认项（确保新项目自动合并到已有数据）
@@ -1789,7 +2033,7 @@ function init(){
   if(h<6)hi.textContent='夜深了，小魏 🌙';else if(h<11)hi.textContent='早上好，小魏 🌅';
   else if(h<14)hi.textContent='中午好，小魏 ☀️';else if(h<18)hi.textContent='下午好，小魏 ☕';else if(h<22)hi.textContent='晚上好，小魏 🌆';else hi.textContent='夜深了，小魏 🌙';
   document.getElementById('quickGrid').innerHTML=QUICK.map(q=>`<div class="quick-item" onclick="go('${q.p}')"><div class="qi-emoji">${q.e}</div><div class="qi-label">${q.n}</div></div>`).join('');
-  renderSummary();renderFit();renderMakeup();renderDress();renderAigc();renderEn();renderTweet();renderMoney();renderInspire();renderRecipeLib();renderVideoPage();renderInspireLinks();renderConstitution();renderSeasonalTips();
+  renderSummary();renderFit();renderMakeup();renderDress();renderAigc();renderEn();renderTweet();renderMoney();renderPeriod();renderAnnivs();renderInspire();renderRecipeLib();showDietTip(0);renderVideoPage();renderInspireLinks();renderConstitution();renderSeasonalTips();
   bindEvents();
   initHomeCarousel();
 }
@@ -1804,7 +2048,9 @@ function go(page){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===page));
   document.querySelectorAll('.dock-item').forEach(n=>n.classList.toggle('active',n.dataset.page===page));
   closeMenu();document.getElementById('main').scrollTop=0;
-  if(page==='fitness')renderFit();
+  if(page==='fitness'){renderFit();setTimeout(function(){drawMeasChart();},100);}
+  if(page==='anniv')renderAnnivs();
+  if(page==='period')renderPeriod();
 }
 
 /* ============ 成长总结（日/月/年 + 打卡统计） ============ */
@@ -2086,33 +2332,208 @@ function fitCalToggle(ds){
 }
 function delFitPhoto(i){DB.fit.photos.splice(i,1);save('fit',DB.fit);renderFit();toast('已删除照片');}
 function removeIssue(i){const name=DB.fit.issues[i];DB.fit.issues.splice(i,1);save('fit',DB.fit);renderFit();toast('已取消「'+name+'」，相关跟练已更新');}
-function addFitRecord(weight,note){
-  DB.fit.records.push({date:today(),weight:weight,note:note});
-  if(weight){DB.fit.profile.weight=weight;}
-  save('fit',DB.fit);renderFit();toast('体重记录已保存 📝');
+function saveMeasurement(){
+  var mw=parseFloat(document.getElementById('mwMorning').value)||0;
+  var ew=parseFloat(document.getElementById('mwEvening').value)||0;
+  var arm=parseFloat(document.getElementById('mwArm').value)||0;
+  var waist=parseFloat(document.getElementById('mwWaist').value)||0;
+  var thigh=parseFloat(document.getElementById('mwThigh').value)||0;
+  var calf=parseFloat(document.getElementById('mwCalf').value)||0;
+  if(!mw&&!ew&&!arm&&!waist&&!thigh&&!calf){toast('至少填一项数据哦～');return;}
+  if(!DB.fit.measurements)DB.fit.measurements=[];
+  // If today already has a record, update it
+  var td=today();
+  var existing=null;
+  for(var i=0;i<DB.fit.measurements.length;i++){if(DB.fit.measurements[i].date===td){existing=i;break;}}
+  var entry={date:td,morning:{},evening:{}};
+  if(mw)entry.morning.weight=mw;
+  if(ew)entry.evening.weight=ew;
+  if(arm){entry.morning.arm=arm;entry.evening.arm=arm;}
+  if(waist){entry.morning.waist=waist;entry.evening.waist=waist;}
+  if(thigh){entry.morning.thigh=thigh;entry.evening.thigh=thigh;}
+  if(calf){entry.morning.calf=calf;entry.evening.calf=calf;}
+  if(existing!==null){
+    // Merge with existing
+    var old=DB.fit.measurements[existing];
+    if(mw)old.morning.weight=mw;if(ew)old.evening.weight=ew;
+    if(arm){old.morning.arm=arm;old.evening.arm=arm;}
+    if(waist){old.morning.waist=waist;old.evening.waist=waist;}
+    if(thigh){old.morning.thigh=thigh;old.evening.thigh=thigh;}
+    if(calf){old.morning.calf=calf;old.evening.calf=calf;}
+    DB.fit.measurements[existing]=old;
+  }else{
+    DB.fit.measurements.push(entry);
+  }
+  DB.fit.measurements.sort(function(a,b){return new Date(a.date.split('/')[0],a.date.split('/')[1]-1,a.date.split('/')[2])-new Date(b.date.split('/')[0],b.date.split('/')[1]-1,b.date.split('/')[2]);});
+  save('fit',DB.fit);
+  document.getElementById('mwMorning').value='';document.getElementById('mwEvening').value='';
+  document.getElementById('mwArm').value='';document.getElementById('mwWaist').value='';
+  document.getElementById('mwThigh').value='';document.getElementById('mwCalf').value='';
+  renderFitSummary();toast('测量数据已保存 📝');
+}
+function drawMeasChart(){
+  var canvas=document.getElementById('measChart');
+  if(!canvas)return;
+  var ctx=canvas.getContext('2d');
+  var dpr=window.devicePixelRatio||1;
+  var w=canvas.parentElement.clientWidth-32;
+  if(w<300)w=300;
+  var h=280;
+  canvas.width=w*dpr;canvas.height=h*dpr;
+  canvas.style.width=w+'px';canvas.style.height=h+'px';
+  ctx.scale(dpr,dpr);
+  var metric=document.getElementById('measChartMetric').value;
+  var meas=DB.fit.measurements||[];
+  if(meas.length===0){
+    ctx.fillStyle='#A0A0B0';ctx.font='14px sans-serif';ctx.textAlign='center';
+    ctx.fillText('还没有测量数据，先记录今天的数据吧～',w/2,h/2);
+    // Update legend
+    document.getElementById('measLegend').innerHTML='';
+    return;
+  }
+  // Collect data points
+  var dates=[],morningVals=[],eveningVals=[];
+  for(var i=0;i<meas.length;i++){
+    var m=meas[i];
+    var mv=m.morning[metric]||m.morning.weight||0;
+    var ev=m.evening[metric]||m.evening.weight||0;
+    if(!mv&&!ev)continue;
+    dates.push(m.date);
+    morningVals.push(mv||null);
+    eveningVals.push(ev||null);
+  }
+  if(dates.length===0){
+    ctx.fillStyle='#A0A0B0';ctx.font='14px sans-serif';ctx.textAlign='center';
+    ctx.fillText('该指标暂无数据～',w/2,h/2);
+    document.getElementById('measLegend').innerHTML='';
+    return;
+  }
+  // Calculate range with tight padding for detail
+  var allVals=[];
+  for(var i=0;i<morningVals.length;i++){if(morningVals[i])allVals.push(morningVals[i]);if(eveningVals[i])allVals.push(eveningVals[i]);}
+  var minV=Math.min.apply(null,allVals),maxV=Math.max.apply(null,allVals);
+  var range=maxV-minV;
+  if(range===0)range=1;
+  var pad=range*0.15||1;
+  minV=Math.max(0,minV-pad);maxV+=pad;
+  // Margins
+  var ml=55,mr=20,mt=25,mb=40;
+  var pw=w-ml-mr,ph=h-mt-mb;
+  // Background
+  ctx.fillStyle='#FFFFFF';ctx.fillRect(0,0,w,h);
+  // Grid
+  ctx.strokeStyle='#F0F0F5';ctx.lineWidth=0.5;
+  var ySteps=6;
+  for(var i=0;i<=ySteps;i++){
+    var y=mt+(ph/ySteps)*i;
+    ctx.beginPath();ctx.moveTo(ml,y);ctx.lineTo(w-mr,y);ctx.stroke();
+    var val=maxV-(range+pad*2)/ySteps*i;
+    ctx.fillStyle='#999';ctx.font='10px sans-serif';ctx.textAlign='right';
+    ctx.fillText(val.toFixed(1),ml-6,y+4);
+  }
+  // X-axis labels (show every N dates)
+  var xStep=Math.max(1,Math.floor(dates.length/8));
+  for(var i=0;i<dates.length;i+=xStep){
+    var x=ml+(pw/(dates.length-1||1))*i;
+    ctx.fillStyle='#999';ctx.font='9px sans-serif';ctx.textAlign='center';
+    var parts=dates[i].split('/');
+    ctx.fillText(parts[1]+'/'+parts[2],x,h-mb+16);
+  }
+  // Draw morning line (solid)
+  drawLine(ctx,morningVals,dates.length,ml,pw,mt,ph,minV,maxV+pad*2,'#F0A0C0',2,true);
+  // Draw evening line (dashed)
+  drawLine(ctx,eveningVals,dates.length,ml,pw,mt,ph,minV,maxV+pad*2,'#8EC8F2',2,false);
+  // Axis labels
+  var metricLabels={weight:'体重(kg)',arm:'臂围(cm)',waist:'腰围(cm)',thigh:'大腿围(cm)',calf:'小腿围(cm)'};
+  ctx.fillStyle='#666';ctx.font='11px sans-serif';ctx.textAlign='center';
+  ctx.fillText(metricLabels[metric]||metric,h/2,h-4);
+  // Legend
+  var legHtml='<span class="legend-item active" onclick="toggleMeasLine(\'morning\',this)" style="color:#F0A0C8;">🌅 早晨</span>'+
+    '<span class="legend-item active" onclick="toggleMeasLine(\'evening\',this)" style="color:#8EC8F2;">🌙 晚上</span>';
+  document.getElementById('measLegend').innerHTML=legHtml;
+}
+function drawLine(ctx,vals,len,ml,pw,mt,ph,minV,maxV,color,lw,dashed){
+  if(!vals||vals.length<2)return;
+  var points=[];
+  for(var i=0;i<len;i++){
+    if(vals[i]===null||vals[i]===undefined)continue;
+    var x=ml+(pw/(len-1||1))*i;
+    var y=mt+ph-((vals[i]-minV)/(maxV-minV))*ph;
+    points.push({x:x,y:y});
+  }
+  if(points.length<2)return;
+  ctx.strokeStyle=color;ctx.lineWidth=lw;ctx.lineJoin='round';ctx.lineCap='round';
+  if(dashed)ctx.setLineDash([4,3]);else ctx.setLineDash([]);
+  ctx.beginPath();ctx.moveTo(points[0].x,points[0].y);
+  for(var i=1;i<points.length;i++){
+    // Smooth curve using quadratic bezier
+    var midX=(points[i-1].x+points[i].x)/2;
+    ctx.quadraticCurveTo(points[i-1].x,points[i-1].y,midX,(points[i-1].y+points[i].y)/2);
+  }
+  ctx.lineTo(points[points.length-1].x,points[points.length-1].y);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  // Draw dots
+  for(var i=0;i<points.length;i++){
+    ctx.fillStyle=color;ctx.beginPath();ctx.arc(points[i].x,points[i].y,2.5,0,Math.PI*2);ctx.fill();
+  }
+}
+function toggleMeasLine(line,el){
+  el.classList.toggle('active');
+  // Redraw with filtered data - simple approach: redraw all
+  drawMeasChart();
 }
 function renderFitSummary(){
-  const el=document.getElementById('fitSummary');
-  const ci=DB.fit.checkins||{};
-  const recs=DB.fit.records.filter(r=>r.weight);
-  // 打卡统计
-  const now=new Date();const halfMonthAgo=new Date(now-15*86400000);
-  const calDays=Object.keys(ci).filter(k=>{const [yy,mm,dd]=k.split('/');const rd=new Date(+yy,+mm-1,+dd);return rd>=halfMonthAgo;}).length;
-  if(recs.length<2){
-    el.innerHTML=`<div class="empty"><div class="empty-emoji">📊</div><div class="empty-tip">记录2次以上体重后，每半个月自动生成变化小结～</div>
-    ${calDays>0?`<div style="margin-top:8px;font-size:13px;">近15天已运动 <b class="theme-text">${calDays}</b> 天 💪</div>`:''}</div>`;return;}
-  const recent=recs.filter(r=>{const [mm,dd]=r.date.split('/');const rd=new Date(now.getFullYear(),+mm-1,+dd);return rd>=halfMonthAgo;});
-  if(recent.length<2){el.innerHTML=`<div class="tip-card theme-bg" style="font-size:13px;">📈 近15天体重记录不足2次。当前最近体重：<b class="theme-text">${recs[recs.length-1].weight}kg</b><br>📅 近15天运动 <b class="theme-text">${calDays}</b> 天</div>`;return;}
-  const first=recent[0],last=recent[recent.length-1];
-  const diff=(last.weight-first.weight).toFixed(1);
-  const trend=diff<0?`下降了 <b class="theme-text">${Math.abs(diff)}kg</b> 🎉`:diff>0?`上升了 <b style="color:#FF9EB5">${diff}kg</b>`:`保持稳定`;
-  el.innerHTML=`<div class="tip-card theme-bg" style="font-size:13px;line-height:1.8;">
-    📊 <b>近半月小结</b><br>
-    起始体重：${first.weight}kg → 最新体重：${last.weight}kg<br>
-    体重${trend}<br>
-    📅 运动打卡 ${calDays} 天<br>
-    ${diff<0?'💪 继续保持，你做得很好！':diff>0?'💛 别焦虑，关注体脂和围度更科学～':'✨ 稳定也是一种进步，继续加油！'}
-  </div>`;
+  var el=document.getElementById('fitSummary');
+  var ci=DB.fit.checkins||{};
+  var meas=DB.fit.measurements||[];
+  // Update count
+  var mcEl=document.getElementById('measCount');
+  if(mcEl)mcEl.textContent='已记录 '+meas.length+' 天';
+  // Draw chart
+  drawMeasChart();
+  // Bi-weekly summary
+  var now=new Date();var halfMonthAgo=new Date(now-15*86400000);
+  var calDays=Object.keys(ci).filter(function(k){var parts=k.split('/');var rd=new Date(+parts[0],+parts[1]-1,+parts[2]);return rd>=halfMonthAgo;}).length;
+  var recentMeas=meas.filter(function(m){var parts=m.date.split('/');var rd=new Date(+parts[0],+parts[1]-1,+parts[2]);return rd>=halfMonthAgo;});
+  if(recentMeas.length<2){
+    el.innerHTML='<div class="empty"><div class="empty-emoji">📊</div><div class="empty-tip">记录2天以上测量数据后，每半个月自动生成变化小结～</div>'+
+      (calDays>0?'<div style="margin-top:8px;font-size:13px;">近15天已运动 <b class="theme-text">'+calDays+'</b> 天 💪</div>':'')+'</div>';
+    return;
+  }
+  // Calculate changes
+  var first=recentMeas[0],last=recentMeas[recentMeas.length-1];
+  var lines=[];
+  // Weight
+  var fw=first.morning.weight||first.evening.weight||0;
+  var lw=last.morning.weight||last.evening.weight||0;
+  if(fw&&lw){
+    var wDiff=(lw-fw).toFixed(1);
+    var wEmoji=wDiff<0?'📉':'📈';
+    lines.push(wEmoji+' 体重：'+fw+'kg → '+lw+'kg（'+(wDiff>=0?'+':'')+wDiff+'kg）');
+  }
+  // Waist
+  var fwa=first.morning.waist||0,lwa=last.morning.waist||0;
+  if(fwa&&lwa){
+    var waDiff=(lwa-fwa).toFixed(1);
+    lines.push('⏳ 腰围：'+fwa+'cm → '+lwa+'cm（'+(waDiff>=0?'+':'')+waDiff+'cm）');
+  }
+  // Thigh
+  var fth=first.morning.thigh||0,lth=last.morning.thigh||0;
+  if(fth&&lth){
+    var thDiff=(lth-fth).toFixed(1);
+    lines.push('🦵 大腿围：'+fth+'cm → '+lth+'cm（'+(thDiff>=0?'+':'')+thDiff+'cm）');
+  }
+  if(lines.length===0){
+    el.innerHTML='<div class="tip-card theme-bg" style="font-size:13px;">📈 近15天有 '+recentMeas.length+' 天测量记录。<br>📅 运动打卡 '+calDays+' 天。<br>💡 记录体重或围度数据后会显示变化小结～</div>';
+    return;
+  }
+  el.innerHTML='<div class="tip-card theme-bg" style="font-size:13px;line-height:1.9;">'+
+    '📊 <b>近半月小结</b>（'+recentMeas.length+'天数据）<br>'+
+    lines.join('<br>')+'<br>'+
+    '📅 运动打卡 '+calDays+' 天'+
+    (lw<fw?'<br>💪 趋势向好，继续加油！':lw>fw?'<br>💛 别焦虑，看围度和体脂更科学～':'<br>✨ 稳定就是最好的进步！')+
+    '</div>';
 }
 
 /* ============ 首页今日数据 + 待办清单 ============ */
@@ -2200,6 +2621,83 @@ function addRecipeIngredients(dish){
   input.value=cur+(cur?'\u3001':'')+newList.join('\u3001');
   toast('\u5df2\u6dfb\u52a0\u98df\u6750\uff1a'+newList.join('\u3001')+' \u2705');
 }
+/* ============ 饮食小知识 ============ */
+const DIET_TIPS=[
+  { // 0 减脂食物
+    sections:[
+      {title:'🍚 主食类（低GI慢碳）', type:'good', items:['燕麦','糙米','藜麦','玉米','红薯','紫薯','全麦面包','荞麦面','南瓜','山药']},
+      {title:'🥩 高蛋白低脂', type:'info', items:['鸡胸肉','虾仁','龙利鱼','三文鱼','瘦牛肉','鸡蛋清','豆腐','脱脂牛奶','扇贝','鱿鱼']},
+      {title:'⚡ 高钾食物（消水肿）', type:'warn', items:['菠菜','西兰花','番茄','蘑菇','香蕉','土豆','牛油果','紫菜','毛豆','芹菜']},
+      {title:'🌱 高纤维蔬菜', type:'good', items:['芹菜','韭菜','木耳','海带','豆芽','芦笋','生菜','油麦菜','秋葵','荷兰豆']},
+      {title:'💧 低卡补水', type:'info', items:['黄瓜','冬瓜','白萝卜','西葫芦','苦瓜','番茄','莴笋','白菜','娃娃菜','空心菜']}
+    ],
+    tip:'💡 减脂期主食每餐一拳大小，蛋白质一掌，蔬菜不限量。每天饮水2000ml帮助代谢。'
+  },
+  { // 1 水果热量
+    sections:[
+      {title:'🔴 高热量水果（少吃/控制）', type:'bad', items:['榴莲 147kcal','椰子 354kcal','荔枝 70kcal','芒果 65kcal','葡萄 69kcal','红枣 125kcal','香蕉 93kcal','山楂 102kcal','菠萝蜜 105kcal','鲜枣 125kcal']},
+      {title:'🟢 低热量水果（放心吃）', type:'good', items:['草莓 32kcal','西瓜 31kcal','柚子 42kcal','木瓜 39kcal','圣女果 22kcal','蓝莓 57kcal','哈密瓜 34kcal','杨梅 30kcal','桃子 48kcal','李子 38kcal']},
+      {title:'🟡 中热量（适量）', type:'warn', items:['苹果 53kcal','橙子 48kcal','梨 51kcal','猕猴桃 61kcal','火龙果 55kcal','枇杷 41kcal','樱桃 46kcal','菠萝 44kcal','石榴 63kcal','山竹 72kcal']}
+    ],
+    tip:'💡 每天水果200-350g（约一个拳头大小），减脂期优先选低糖水果，上午/下午加餐时吃最好。'
+  },
+  { // 2 女生养护
+    sections:[
+      {title:'🫘 大豆异黄酮（植物雌激素）', type:'info', items:['豆浆','豆腐','腐竹','毛豆','纳豆','豆豉','黄豆','黑豆','豆腐皮','豆奶']},
+      {title:'🥜 坚果种子（维E+好脂肪）', type:'warn', items:['核桃','杏仁','亚麻籽','南瓜籽','葵花籽','芝麻','腰果','松子','榛子','花生']},
+      {title:'🖤 黑色食物（补肾养气血）', type:'good', items:['黑豆','黑芝麻','黑米','黑木耳','黑枸杞','桑葚','乌鸡','紫菜','海带','黑枣']},
+      {title:'🌸 经期调理食物', type:'info', items:['红枣','枸杞','桂圆','当归','生姜红糖','益母草','玫瑰花茶','阿胶','猪肝','菠菜']},
+      {title:'🧡 黄体酮天然来源', type:'warn', items:['葛根','山药','核桃','牛油果','西兰花','羽衣甘蓝','南瓜','红薯','鸡蛋黄','深海鱼']}
+    ],
+    tip:'💡 大豆异黄酮每天30-50mg（约一杯豆浆），坚果每天一小把。经期注意保暖补铁，少吃生冷。'
+  },
+  { // 3 应季果蔬
+    sections:[
+      {title:'🌸 春季（3-5月）', type:'good', items:['春笋','荠菜','韭菜','香椿','菠菜','豌豆','芦笋','蚕豆','草莓','樱桃']},
+      {title:'☀️ 夏季（6-8月）', type:'warn', items:['冬瓜','苦瓜','丝瓜','黄瓜','茄子','空心菜','豇豆','番茄','西瓜','桃子','葡萄','荔枝','芒果','杨梅','蓝莓']},
+      {title:'🍂 秋季（9-11月）', type:'info', items:['莲藕','山药','南瓜','芋头','秋葵','花菜','茭白','百合','柿子','柚子','石榴','梨','苹果','枣']},
+      {title:'❄️ 冬季（12-2月）', type:'good', items:['萝卜','白菜','冬笋','芥菜','菠菜','红薯','土豆','胡萝卜','柑橘','橙子','猕猴桃','山楂','甘蔗']}
+    ],
+    tip:'💡 俗话说"冬吃萝卜夏吃姜"——夏天吃姜驱寒祛湿，冬天吃萝卜清热顺气。应季食材更新鲜、营养更好！'
+  }
+];
+
+function showDietTip(idx){
+  // Update tab active state
+  var tabs=document.querySelectorAll('.diet-tip-tab');
+  tabs.forEach(function(t,i){ t.classList.toggle('active',i===idx); });
+
+  var tip=DIET_TIPS[idx];
+  var html='';
+  var now=new Date();
+  var month=now.getMonth()+1;
+  var season='';
+  if(month>=3&&month<=5)season='spring';
+  else if(month>=6&&month<=8)season='summer';
+  else if(month>=9&&month<=11)season='autumn';
+  else season='winter';
+  var seasonIdx={spring:0,summer:1,autumn:2,winter:3};
+
+  tip.sections.forEach(function(sec,si){
+    var isCurrentSeason=(idx===3 && si===seasonIdx[season]);
+    html+='<div class="diet-section-title"'+(isCurrentSeason?' style="color:var(--primary-dark);"':'')+'>'+
+      sec.title+(isCurrentSeason?' <span style="font-size:11px;background:var(--primary-soft);border-radius:10px;padding:2px 8px;">📍 当季</span>':'')+
+      '</div>';
+    html+='<div class="diet-kw-row">';
+    sec.items.forEach(function(item){
+      html+='<span class="diet-kw-tag '+sec.type+'">'+item+'</span>';
+    });
+    html+='</div>';
+  });
+  html+='<div class="tip-card theme-bg" style="font-size:13px;line-height:1.7;margin-top:8px;">'+tip.tip+'</div>';
+  var el=document.getElementById('dietTipContent');
+  el.innerHTML=html;
+  // Re-trigger fade animation
+  el.classList.remove('diet-tip-content');
+  void el.offsetWidth;
+  el.classList.add('diet-tip-content');
+}
+
 function dietGenerate(shuffle){
   const input=document.getElementById('dietInput').value.trim();
   if(!input){toast('\u8bf7\u5148\u8f93\u5165\u5bb6\u91cc\u6709\u7684\u98df\u6750\uff0c\u6216\u8005\u70b9\u83dc\u5e93\u7684 + \u81ea\u52a8\u6dfb\u52a0\uff5e');return;}
@@ -3391,6 +3889,336 @@ function addMoney(type,amount,cat,note){
 function addSavings(amount){DB.money.savings.current+=+amount;save('money',DB.money);renderMoney();toast(`存入 ¥${amount} 🐷`);}
 function setSaveGoal(g){DB.money.savings.goal=+g;save('money',DB.money);renderMoney();toast('存钱目标已更新 🎯');}
 
+/* ============ 经期 ============ */
+const PERIOD_FOODS=[
+  {title:'🍷 酒酿红糖鸡蛋',desc:'酒酿+红糖+鸡蛋+红枣+枸杞，经期暖宫驱寒、补气血'},
+  {title:'☕ 红糖姜茶',desc:'生姜3-5片+红糖煮水，驱寒暖宫、缓解痛经'},
+  {title:'🥣 桂圆红枣粥',desc:'桂圆+红枣+小米/糯米，补血安神养气'},
+  {title:'🍲 当归生姜羊肉汤',desc:'经期后调理，温补气血、改善手脚冰凉'},
+  {title:'🥛 热豆浆/黑豆浆',desc:'大豆异黄酮调节内分泌，缓解经期不适'},
+  {title:'🍵 玫瑰花茶',desc:'玫瑰花+枸杞泡水，疏肝解郁、缓解经期情绪波动'},
+  {title:'🥬 菠菜猪肝汤',desc:'补铁补血，经期后食用效果更好'},
+  {title:'🍯 蜂蜜牛奶',desc:'睡前温牛奶+蜂蜜，安神助眠、缓解经期失眠'}
+];
+
+function periodSave(){
+  var s=document.getElementById('periodStart').value;
+  var e=document.getElementById('periodEnd').value;
+  if(!s||!e){toast('请填写开始和结束日期～');return;}
+  var painBtns=document.querySelectorAll('#periodPain .period-level-btn');
+  var painLevel=0;
+  painBtns.forEach(function(b){if(b.classList.contains('sel'))painLevel=parseInt(b.dataset.level);});
+  var flow=document.getElementById('periodFlow').value;
+  var color=document.getElementById('periodColor').value;
+  var feel=document.getElementById('periodFeel').value.trim();
+  if(!flow||!color){toast('请选择经量和颜色～');return;}
+  // Calc score (0-100, higher = better health)
+  var score=80;
+  if(painLevel>=3)score-=25;else if(painLevel>=2)score-=15;else if(painLevel>=1)score-=5;
+  if(flow==='much')score-=10;else if(flow==='little')score-=10;
+  if(color==='brown')score-=5;else if(color==='pink')score-=5;
+  var cycleDays=Math.round((new Date(e)-new Date(s))/(86400000))+1;
+  if(cycleDays<3||cycleDays>7)score-=10;
+  var assessment='';
+  if(score>=85)assessment='🌟 经期状态很好，继续保持！';
+  else if(score>=70)assessment='🙂 经期状态不错，注意休息～';
+  else if(score>=55)assessment='😐 有些小状况，多喝温水早休息';
+  else assessment='⚠️ 经期状态需关注，建议咨询医生';
+  var record={start:s,end:e,pain:painLevel,flow:flow,color:color,feel:feel,score:score,assessment:assessment,date:today()};
+  if(!DB.periodRecords)DB.periodRecords=[];
+  DB.periodRecords.push(record);
+  DB.periodRecords.sort(function(a,b){return new Date(b.start)-new Date(a.start);});
+  save('periodRecords',DB.periodRecords);
+  document.getElementById('periodStart').value='';document.getElementById('periodEnd').value='';
+  document.getElementById('periodFlow').value='';document.getElementById('periodColor').value='';
+  document.getElementById('periodFeel').value='';
+  painBtns.forEach(function(b){b.classList.remove('sel');});
+  renderPeriod();toast('经期记录已保存 ✅');
+}
+
+function renderPeriod(){
+  // Status card
+  var statusEl=document.getElementById('periodStatus');
+  var avgCycle=28;var lastStart='';var nextPredict='';
+  if(DB.periodRecords&&DB.periodRecords.length>0){
+    lastStart=DB.periodRecords[0].start;
+    var lastDate=new Date(lastStart);
+    lastDate.setDate(lastDate.getDate()+avgCycle);
+    nextPredict=lastDate.toISOString().slice(0,10);
+    var now=new Date();var today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+    var endLast=DB.periodRecords[0].end?new Date(DB.periodRecords[0].end):null;
+    var inPeriod=(endLast&&today<=endLast&&today>=new Date(lastStart));
+    var daysToNext=Math.round((new Date(nextPredict)-today)/86400000);
+    if(inPeriod){
+      statusEl.innerHTML='<div class="card" style="text-align:center;background:linear-gradient(135deg,#FFF0F3,#FFE0E8);"><div style="font-size:32px;margin-bottom:8px;">🩸</div><div style="font-size:15px;font-weight:700;color:#FF7B93;">正在经期中</div><div style="font-size:13px;color:var(--text-light);">❤️ 多喝热水，注意保暖</div></div>';
+    }else if(daysToNext<=0){
+      statusEl.innerHTML='<div class="card" style="text-align:center;background:linear-gradient(135deg,#FFF3E0,#FFE8CC);"><div style="font-size:32px;margin-bottom:8px;">⏰</div><div style="font-size:15px;font-weight:700;color:#E88D2A;">经期可能快来了</div><div style="font-size:13px;color:var(--text-light);">预计日期：'+nextPredict+'，提前准备～</div></div>';
+    }else{
+      statusEl.innerHTML='<div class="card" style="text-align:center;background:linear-gradient(135deg,#E8F0FF,#D8E4FF);"><div style="font-size:32px;margin-bottom:8px;">📅</div><div style="font-size:15px;font-weight:700;color:#5B8DEF;">距下次经期约 '+daysToNext+' 天</div><div style="font-size:13px;color:var(--text-light);">预计：'+nextPredict+' · 上期：'+lastStart+'</div></div>';
+    }
+  }else{
+    statusEl.innerHTML='<div class="card" style="text-align:center;"><div style="font-size:32px;margin-bottom:8px;">🌸</div><div style="font-size:15px;font-weight:700;color:var(--text);">还没有记录</div><div style="font-size:13px;color:var(--text-light);">记录第一次经期，开始关爱自己～</div></div>';
+  }
+  // Pain level button click
+  var painBtns=document.querySelectorAll('#periodPain .period-level-btn');
+  painBtns.forEach(function(b){
+    b.onclick=function(){
+      painBtns.forEach(function(x){x.classList.remove('sel');});
+      this.classList.add('sel');
+    };
+  });
+  // History
+  var histEl=document.getElementById('periodHistory');
+  if(!DB.periodRecords||DB.periodRecords.length===0){
+    histEl.innerHTML='<div class="empty"><div class="empty-emoji">📋</div><div class="empty-tip">还没有经期记录，去上面记录吧～</div></div>';
+  }else{
+    var flowLabels={little:'🩹 量少',normal:'🩸 正常',much:'🩸🩸 量多'};
+    var colorLabels={bright:'🔴 鲜红',dark:'🟤 暗红',brown:'🟫 褐色',pink:'🩷 淡粉'};
+    var painLabels={0:'😊',1:'😐',2:'😣',3:'😖',4:'🤒'};
+    histEl.innerHTML=DB.periodRecords.map(function(r,idx){
+      var days=Math.round((new Date(r.end)-new Date(r.start))/(86400000))+1;
+      return '<div class="card" style="position:relative;margin-bottom:10px;"><button style="position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:50%;background:var(--bg-soft);border:none;color:var(--text-faint);font-size:12px;cursor:pointer;" onclick="periodDel('+idx+')">✕</button><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;"><div class="period-score" style="padding:0;flex-shrink:0;"><span class="big" style="font-size:32px;">'+r.score+'</span><span style="font-size:12px;color:var(--text-light);">分</span></div><div style="flex:1;"><div style="font-size:14px;font-weight:700;">'+r.start+' → '+r.end+'（'+days+'天）</div><div style="font-size:12px;color:var(--text-light);margin-top:2px;">'+painLabels[r.pain]+' '+flowLabels[r.flow]+' · '+colorLabels[r.color]+'</div></div></div><div class="tip-card theme-bg" style="font-size:13px;margin-top:6px;">'+r.assessment+'</div>'+(r.feel?'<div style="font-size:12px;color:var(--text-light);margin-top:6px;">💬 '+esc(r.feel)+'</div>':'')+'</div>';
+    }).join('');
+  }
+  // Foods
+  var foodsEl=document.getElementById('periodFoods');
+  foodsEl.innerHTML=PERIOD_FOODS.map(function(f){
+    return '<div style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px dashed var(--border);"><div style="font-size:14px;font-weight:700;margin-bottom:3px;">'+f.title+'</div><div style="font-size:12px;color:var(--text-light);">'+f.desc+'</div></div>';
+  }).join('');
+}
+function periodDel(idx){
+  if(!confirm('确定删除这条经期记录？'))return;
+  DB.periodRecords.splice(idx,1);save('periodRecords',DB.periodRecords);
+  renderPeriod();toast('记录已删除');
+}
+
+/* ============ 纪念日 ============ */
+var _annivCurrentId=null;
+function annivAdd(){
+  var title=document.getElementById('annivTitle').value.trim();
+  var type=document.getElementById('annivType').value;
+  var date=document.getElementById('annivDate').value;
+  var who=document.getElementById('annivWho').value.trim();
+  if(!title||!date){toast('请填写名称和日期～');return;}
+  if(!DB.annivs)DB.annivs=[];
+  var id='a'+Date.now()+Math.random().toString(36).substr(2,4);
+  DB.annivs.push({id:id,title:title,type:type,date:date,who:who,createdAt:today()});
+  DB.annivs.sort(function(a,b){return new Date(a.date)-new Date(b.date);});
+  save('annivs',DB.annivs);
+  document.getElementById('annivTitle').value='';document.getElementById('annivDate').value='';
+  document.getElementById('annivWho').value='';
+  renderAnnivs();toast('纪念日已添加 💝');
+}
+function annivDel(idx,ev){
+  if(ev)ev.stopPropagation();
+  if(!confirm('确定删除这个纪念日？'))return;
+  // Also delete associated profile
+  var id=DB.annivs[idx].id;
+  if(DB.annivProfiles&&DB.annivProfiles[id]){delete DB.annivProfiles[id];save('annivProfiles',DB.annivProfiles);}
+  DB.annivs.splice(idx,1);save('annivs',DB.annivs);renderAnnivs();toast('已删除');
+}
+function renderAnnivs(){
+  var el=document.getElementById('annivList');el.style.display='block';
+  document.getElementById('annivDetail').classList.remove('show');
+  if(!DB.annivs||DB.annivs.length===0){
+    el.innerHTML='<div class="card"><div class="empty"><div class="empty-emoji">💝</div><div class="empty-tip">还没有纪念日<br>添加属于你的珍贵日子吧～</div></div></div>';
+    return;
+  }
+  var typeIcons={anniversary:'💕',birthday:'🎂',other:'📌'};
+  var typeColors={anniversary:'#FFE0E8',birthday:'#E8F0FF',other:'#F0F0F0'};
+  var now=new Date();now.setHours(0,0,0,0);
+  el.innerHTML=DB.annivs.map(function(a,idx){
+    var aDate=new Date(a.date);
+    var thisYear=new Date(now.getFullYear(),aDate.getMonth(),aDate.getDate());
+    if(thisYear<now)thisYear.setFullYear(thisYear.getFullYear()+1);
+    var daysUntil=Math.round((thisYear-now)/86400000);
+    var daysSince=Math.round((now-aDate)/86400000);
+    var years=Math.floor(daysSince/365.25);
+    var daysInYear=daysSince-Math.floor(years*365.25);
+    var badge='',badgeClass='',countText='';
+    var milestones=[100,200,300,365,500,730,1000,1095,1461,1826,2000];
+    var isMilestone=false,milestoneDays=0;
+    for(var mi=0;mi<milestones.length;mi++){
+      var m=milestones[mi];
+      if(Math.abs(daysSince-m)<=3){isMilestone=true;milestoneDays=m;break;}
+    }
+    if(a.type==='birthday'){
+      if(daysUntil===0){badge='🎂 今天生日！';badgeClass='milestone';countText='今天';}
+      else if(daysUntil<=7){badge='🔔 即将到来';badgeClass='soon';countText='倒计时 '+daysUntil+' 天';}
+      else{countText='倒计时 '+daysUntil+' 天';}
+    }else if(isMilestone){
+      badge='✨ '+milestoneDays+'天里程碑！';badgeClass='milestone';
+      countText='已过 '+daysSince+' 天';
+    }else if(daysUntil<=7){
+      badge='📅 快到了';badgeClass='soon';
+      countText='倒计时 '+daysUntil+' 天';
+    }else{
+      countText='已过 '+daysSince+' 天';
+    }
+    var subText=a.who?a.who+' · '+a.date:'日期 '+a.date;
+    if(years>=1&&a.type!=='birthday')subText+=' · '+years+'年'+Math.round(daysInYear)+'天';
+    // Check if there's a profile
+    var hasProfile=(DB.annivProfiles&&DB.annivProfiles[a.id]&&((DB.annivProfiles[a.id].media&&DB.annivProfiles[a.id].media.length)||(DB.annivProfiles[a.id].photos&&DB.annivProfiles[a.id].photos.length)||DB.annivProfiles[a.id].notes||DB.annivProfiles[a.id].hobbies));
+    var tapHint=hasProfile?' 📋有详情':' 👆查看详情';
+    return '<div class="anniv-card" onclick="annivOpenDetail(\''+a.id+'\')" style="cursor:pointer;">'+
+      '<div class="icon" style="background:'+typeColors[a.type]+'">'+typeIcons[a.type]+'</div>'+
+      '<div class="info"><div class="name">'+esc(a.title)+'</div><div class="sub">'+subText+'</div>'+
+      (badge?'<span class="badge '+badgeClass+'">'+badge+'</span>':'')+
+      '<div style="font-size:10px;color:var(--text-faint);margin-top:3px;">'+tapHint+'</div>'+
+      '</div>'+
+      '<div class="countdown"><div class="days">'+(a.type==='birthday'&&daysUntil>7?daysUntil:daysSince)+'</div><div class="days-label">'+countText+'</div></div>'+
+      '<button class="del-btn" onclick="annivDel('+idx+',event)">✕</button>'+
+      '</div>';
+  }).join('');
+}
+/* 详情页 */
+function annivOpenDetail(id){
+  _annivCurrentId=id;
+  var a=null;for(var i=0;i<DB.annivs.length;i++){if(DB.annivs[i].id===id){a=DB.annivs[i];break;}}
+  if(!a)return;
+  var typeIcons={anniversary:'💕',birthday:'🎂',other:'📌'};
+  document.getElementById('annivList').style.display='none';
+  document.getElementById('annivDetail').classList.add('show');
+  document.getElementById('annivProfileIcon').textContent=typeIcons[a.type]||'💝';
+  document.getElementById('annivProfileName').textContent=a.title;
+  document.getElementById('annivProfileSub').textContent=(a.who?a.who+' · ':'')+a.date+' · '+(a.type==='birthday'?'生日':a.type==='anniversary'?'纪念日':'其他');
+  // Load profile data
+  if(!DB.annivProfiles)DB.annivProfiles={};
+  var p=DB.annivProfiles[id]||{};
+  document.getElementById('annivNotes').value=p.notes||'';
+  document.getElementById('annivHobbies').value=p.hobbies||'';
+  document.getElementById('annivOther').value=p.other||'';
+  renderAnnivPhotos();
+  window.scrollTo(0,0);
+}
+function annivBackToList(){
+  _annivCurrentId=null;
+  document.getElementById('annivDetail').classList.remove('show');
+  document.getElementById('annivList').style.display='block';
+  window.scrollTo(0,0);
+}
+function annivSaveProfile(){
+  if(!_annivCurrentId)return;
+  if(!DB.annivProfiles)DB.annivProfiles={};
+  var p=DB.annivProfiles[_annivCurrentId]||{};
+  p.notes=document.getElementById('annivNotes').value.trim();
+  p.hobbies=document.getElementById('annivHobbies').value.trim();
+  p.other=document.getElementById('annivOther').value.trim();
+  DB.annivProfiles[_annivCurrentId]=p;
+  save('annivProfiles',DB.annivProfiles);
+  toast('信息已保存 💾');
+}
+function annivAddMedia(){
+  var file=document.getElementById('annivPhotoInput').files[0];
+  if(!file)return;
+  if(!DB.annivProfiles)DB.annivProfiles={};
+  var p=DB.annivProfiles[_annivCurrentId]||{};
+  if(!p.media)p.media=[];
+  if(p.media.length>=100){toast('最多100个媒体文件哦～');document.getElementById('annivPhotoInput').value='';return;}
+  var isVideo=file.type.startsWith('video/');
+  if(isVideo){
+    // Warn if video is large
+    var sizeMB=(file.size/1048576).toFixed(1);
+    if(file.size>10*1048576){toast('视频有点大('+sizeMB+'MB)，建议压缩后再传');document.getElementById('annivPhotoInput').value='';return;}
+    var reader=new FileReader();
+    reader.onload=function(e){
+      p.media.push({type:'video',src:e.target.result});
+      DB.annivProfiles[_annivCurrentId]=p;
+      save('annivProfiles',DB.annivProfiles);
+      renderAnnivPhotos();
+      toast('视频已添加 🎬 ('+p.media.length+'/100)');
+    };
+    reader.readAsDataURL(file);
+  }else{
+    compressImg(file,function(dataUrl){
+      p.media.push({type:'image',src:dataUrl});
+      DB.annivProfiles[_annivCurrentId]=p;
+      save('annivProfiles',DB.annivProfiles);
+      renderAnnivPhotos();
+      toast('照片已添加 📸 ('+p.media.length+'/100)');
+    },200);
+  }
+  document.getElementById('annivPhotoInput').value='';
+}
+function annivDelMedia(mIdx,ev){
+  if(ev)ev.stopPropagation();
+  if(!confirm('删除这个媒体文件？'))return;
+  var p=DB.annivProfiles[_annivCurrentId];
+  p.media.splice(mIdx,1);
+  save('annivProfiles',DB.annivProfiles);
+  renderAnnivPhotos();toast('已删除');
+}
+function renderAnnivPhotos(){
+  var grid=document.getElementById('annivPhotoGrid');
+  var countEl=document.getElementById('annivPhotoCount');
+  var p=(DB.annivProfiles&&DB.annivProfiles[_annivCurrentId])||{};
+  var media=p.media||[];
+  // Migrate old photos array
+  if(!p.media&&p.photos&&p.photos.length){p.media=p.photos.map(function(s){return {type:'image',src:s};});p.photos=null;save('annivProfiles',DB.annivProfiles);media=p.media;}
+  if(countEl){var pc=media.filter(function(m){return m.type==='image';}).length;var vc=media.filter(function(m){return m.type==='video';}).length;countEl.textContent='('+media.length+'/100 📸'+pc+' 🎬'+vc+')';}
+  var html='';
+  for(var i=0;i<media.length;i++){
+    var m=media[i];
+    if(m.type==='video'){
+      html+='<div class="photo-item" onclick="viewPhoto('+i+')"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 200%22%3E%3Crect fill=%22%234A4A6A%22 width=%22200%22 height=%22200%22/%3E%3Ctext x=%22100%22 y=%22110%22 text-anchor=%22middle%22 fill=%22%23fff%22 font-size=%2260%22%3E🎬%3C/text%3E%3C/svg%3E" alt="video" loading="lazy"><div class="video-badge">▶</div><div class="media-type">视频</div><button class="photo-del" onclick="event.stopPropagation();annivDelMedia('+i+',event)">✕</button></div>';
+    }else{
+      html+='<div class="photo-item" onclick="viewPhoto('+i+')"><img src="'+m.src+'" alt="photo" loading="lazy"><div class="media-type">照片</div><button class="photo-del" onclick="event.stopPropagation();annivDelMedia('+i+',event)">✕</button></div>';
+    }
+  }
+  if(media.length<100){
+    html+='<div class="photo-add" onclick="document.getElementById(\'annivPhotoInput\').click()"><span class="add-icon">+</span>添加照片/视频</div>';
+  }
+  grid.innerHTML=html;
+}
+var _photoViewIdx=0;
+function viewPhoto(idx){
+  var p=(DB.annivProfiles&&DB.annivProfiles[_annivCurrentId])||{};
+  var media=p.media||[];
+  if(!media.length)return;
+  _photoViewIdx=idx;
+  var m=media[idx];
+  var imgEl=document.getElementById('photoOverlayImg');
+  var vidEl=document.getElementById('photoOverlayVid');
+  var overlay=document.getElementById('photoOverlay');
+  if(m.type==='video'){
+    imgEl.style.display='none';
+    vidEl.style.display='block';
+    vidEl.src=m.src;
+    vidEl.play();
+  }else{
+    vidEl.style.display='none';vidEl.pause();vidEl.src='';
+    imgEl.style.display='block';
+    imgEl.src=m.src;
+  }
+  document.getElementById('photoCounter').textContent=(idx+1)+' / '+media.length+(m.type==='video'?' 🎬':' 📸');
+  overlay.classList.add('show');
+}
+function navPhoto(dir){
+  var p=(DB.annivProfiles&&DB.annivProfiles[_annivCurrentId])||{};
+  var media=p.media||[];
+  if(!media.length)return;
+  _photoViewIdx=(_photoViewIdx+dir+media.length)%media.length;
+  var m=media[_photoViewIdx];
+  var imgEl=document.getElementById('photoOverlayImg');
+  var vidEl=document.getElementById('photoOverlayVid');
+  if(m.type==='video'){
+    imgEl.style.display='none';
+    vidEl.style.display='block';
+    vidEl.src=m.src;
+    vidEl.play();
+  }else{
+    vidEl.style.display='none';vidEl.pause();vidEl.src='';
+    imgEl.style.display='block';
+    imgEl.src=m.src;
+  }
+  document.getElementById('photoCounter').textContent=(_photoViewIdx+1)+' / '+media.length+(m.type==='video'?' 🎬':' 📸');
+}
+function closePhotoView(){
+  var vidEl=document.getElementById('photoOverlayVid');
+  vidEl.pause();vidEl.src='';
+  document.getElementById('photoOverlay').classList.remove('show');
+}
+
 /* ============ 灵感 ============ */
 function renderInspire(){
   const el=document.getElementById('inspireList');
@@ -3736,10 +4564,52 @@ fullSync().finally(function(){init();});
 </script>
 <script>
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('/sw.js').then(function(reg){
-    console.log('SW registered:', reg.scope);
-  }).catch(function(err){
-    console.log('SW failed:', err);
+  function activateWaiting(w){
+    if (w) w.postMessage({ type: 'SKIP_WAITING' });
+  }
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).then(function(reg){
+      console.log('SW registered:', reg.scope);
+
+      // If an update is already waiting, activate it now
+      if (reg.waiting) activateWaiting(reg.waiting);
+
+      // Detect a new service worker being installed
+      reg.addEventListener('updatefound', function() {
+        var newWorker = reg.installing;
+        if (!newWorker) return;
+        newWorker.addEventListener('statechange', function() {
+          if (newWorker.state === 'installed') {
+            if (navigator.serviceWorker.controller) {
+              console.log('SW: new version ready, activating & reloading...');
+              var toast = document.createElement('div');
+              toast.textContent = '✨ 检测到新版本，正在更新...';
+              toast.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--primary);color:#fff;padding:12px 24px;border-radius:20px;font-size:15px;z-index:99999;box-shadow:0 4px 20px rgba(0,0,0,0.2);';
+              if (document.body) document.body.appendChild(toast);
+              activateWaiting(newWorker);
+              // controllerchange will trigger the reload; fallback just in case
+              setTimeout(function(){ if (!window.__swReloaded) window.location.reload(); }, 1500);
+            } else {
+              activateWaiting(newWorker);
+            }
+          }
+        });
+      });
+
+      // Periodically check for updates so an already-open PWA also picks up changes
+      setInterval(function(){ reg.update(); }, 60000);
+    }).catch(function(err){
+      console.log('SW failed:', err);
+    });
+  });
+
+  // When a new SW takes over (controller change), reload to show fresh content
+  var refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', function() {
+    if (refreshing) return;
+    refreshing = true;
+    window.__swReloaded = true;
+    window.location.reload();
   });
 }
 </script>

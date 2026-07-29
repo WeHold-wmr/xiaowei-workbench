@@ -1,4 +1,5 @@
-const CACHE = 'xw-v10';
+const CACHE = 'xw-1785335888511';
+const IGNORE_CACHE = ['xw-v10', 'xw-v9', 'xw-v8', 'xw-v7', 'xw-v6', 'xw-v5', 'xw-v4', 'xw-v3', 'xw-v2', 'xw-v1'];
 
 const PRECACHE = [
   '/',
@@ -9,7 +10,7 @@ const PRECACHE = [
   '/avatar.png'
 ];
 
-// 安装时预缓存核心文件
+// Install: pre-cache core files, then activate immediately
 self.addEventListener('install', function(e) {
   e.waitUntil(
     caches.open(CACHE).then(function(cache) {
@@ -20,25 +21,32 @@ self.addEventListener('install', function(e) {
   );
 });
 
-// 激活时清理旧缓存
+// Activate: clean old caches, notify all clients to refresh
 self.addEventListener('activate', function(e) {
   e.waitUntil(
     caches.keys().then(function(keys) {
       return Promise.all(
-        keys.filter(function(k) { return k !== CACHE; })
-            .map(function(k) { return caches.delete(k); })
+        keys.filter(function(k) { return k !== CACHE && IGNORE_CACHE.indexOf(k) === -1; })
+            .map(function(k) { console.log('SW: deleting old cache', k); return caches.delete(k); })
       );
     }).then(function() {
       return self.clients.claim();
+    }).then(function() {
+      // Notify all open clients that a new version is ready
+      return self.clients.matchAll().then(function(clients) {
+        clients.forEach(function(client) {
+          client.postMessage({ type: 'NEW_VERSION', version: CACHE });
+        });
+      });
     })
   );
 });
 
-// 网络优先(同步API不能缓存), 静态文件缓存优先
+// Fetch strategy
 self.addEventListener('fetch', function(e) {
   var url = new URL(e.request.url);
 
-  // API 请求：网络优先（同步数据必须实时）
+  // API: network-only
   if (url.pathname.startsWith('/api/')) {
     e.respondWith(fetch(e.request).catch(function() {
       return new Response(JSON.stringify({ok: false, error: 'offline'}), {
@@ -48,10 +56,28 @@ self.addEventListener('fetch', function(e) {
     return;
   }
 
-  // 静态文件：缓存优先，网络回退
+  // HTML navigation: network-first (always try to get latest version)
+  if (e.request.mode === 'navigate' || url.pathname === '/' || url.pathname.endsWith('.html')) {
+    e.respondWith(
+      fetch(e.request, { cache: 'no-cache' }).then(function(response) {
+        if (response && response.status === 200) {
+          var clone = response.clone();
+          caches.open(CACHE).then(function(cache) {
+            cache.put(e.request, clone);
+          });
+        }
+        return response;
+      }).catch(function() {
+        return caches.match(e.request);
+      })
+    );
+    return;
+  }
+
+  // Static assets (images, CSS-in-HTML, manifest): cache-first, network fallback + background update
   e.respondWith(
     caches.match(e.request).then(function(cached) {
-      var fetched = fetch(e.request).then(function(response) {
+      var fetched = fetch(e.request, { cache: 'no-cache' }).then(function(response) {
         if (response && response.status === 200) {
           var clone = response.clone();
           caches.open(CACHE).then(function(cache) {

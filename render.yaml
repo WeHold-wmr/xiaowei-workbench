@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     branch: main
-    buildCommand: ""
+    buildCommand: "node tools/stamp-sw.js"
     startCommand: node server.js
     envVars:
       - key: NODE_ENV
