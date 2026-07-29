@@ -463,7 +463,7 @@ a.link{color:var(--primary-dark);text-decoration:underline;font-weight:600;}
       <div class="nav-label">创作与记录</div>
       <a class="nav-item" data-page="video"><span class="nav-icon" style="background:#F5E8FB">🎬</span><span class="nav-text">热点二创</span></a>
       <a class="nav-item" data-page="inspire"><span class="nav-icon" style="background:#FFF5D6">💡</span><span class="nav-text">选题灵感</span></a>
-      <a class="nav-item" data-page="memo"><span class="nav-icon" style="background:#FDF0D8">📝</span><span class="nav-text">备忘录</span></a>
+      <a class="nav-item" data-page="memo"><span class="nav-icon" style="background:#FDF0D8">📊</span><span class="nav-text">成长总结</span></a>
       <a class="nav-item" data-page="money"><span class="nav-icon" style="background:#FFF5D6">🧾</span><span class="nav-text">记账本</span></a>
     </nav>
     <div class="sidebar-foot">小魏工作台 · v2.0 精细版<br>用温柔的方式，过自律的生活</div>
@@ -947,14 +947,40 @@ a.link{color:var(--primary-dark);text-decoration:underline;font-weight:600;}
       </div>
     </section>
 
-    <!-- ===== 备忘录 ===== -->
+    <!-- ===== 成长总结 ===== -->
     <section class="page t-memo" id="page-memo">
       <div class="banner theme-grad">
-        <h2>备忘录 📝</h2>
-        <p>随手记下每一个灵感与小事～</p>
-        <span class="b-emoji">📌</span>
+        <h2>成长总结 📊</h2>
+        <p>每一天的努力都值得被记录～</p>
+        <span class="b-emoji">🌟</span>
       </div>
-      <div class="memo-grid" id="memoGrid"></div>
+      <!-- 统计卡片 -->
+      <div class="grid grid-2" style="margin-bottom:16px;">
+        <div class="card" style="margin:0;text-align:center;"><div style="font-size:12px;color:var(--text-light)">本月打卡</div><div style="font-size:28px;font-weight:800;color:#A8E6CF;margin-top:4px;" id="sumMonthDays">0天</div></div>
+        <div class="card" style="margin:0;text-align:center;"><div style="font-size:12px;color:var(--text-light)">连续打卡</div><div style="font-size:28px;font-weight:800;color:#FF9EB5;margin-top:4px;" id="sumStreak">0天</div></div>
+        <div class="card" style="margin:0;text-align:center;"><div style="font-size:12px;color:var(--text-light)">累计待办完成</div><div style="font-size:28px;font-weight:800;color:#FFD580;margin-top:4px;" id="sumTodoDone">0</div></div>
+        <div class="card" style="margin:0;text-align:center;"><div style="font-size:12px;color:var(--text-light)">本月支出</div><div style="font-size:28px;font-weight:800;color:#B5A0FF;margin-top:4px;" id="sumMonthOut">¥0</div></div>
+      </div>
+      <!-- 本月打卡日历 -->
+      <div class="card">
+        <div class="card-title"><span class="ct-icon" style="background:#FFEDE0">📅</span>本月打卡日历 <span id="sumCalTitle" style="font-size:12px;color:var(--text-light);font-weight:400;margin-left:8px;"></span></div>
+        <div id="sumCalendar" style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center;padding:4px 0;"></div>
+      </div>
+      <!-- 每月总结列表 -->
+      <div class="card">
+        <div class="card-title"><span class="ct-icon" style="background:#E0F5E8">📈</span>月度回顾</div>
+        <div id="sumMonthly" style="max-height:300px;overflow-y:auto;"></div>
+      </div>
+      <!-- 年度回顾 -->
+      <div class="card">
+        <div class="card-title"><span class="ct-icon" style="background:#EDE4FF">🗓️</span>年度总览</div>
+        <div id="sumYearly"></div>
+      </div>
+      <!-- 随手记 -->
+      <div class="card">
+        <div class="card-title"><span class="ct-icon" style="background:#FDF0D8">📝</span>随手记 <button class="btn btn-soft" style="font-size:11px;padding:4px 12px;margin-left:auto;border-radius:10px;" onclick="openSheet('memo')">＋ 记一条</button></div>
+        <div class="memo-grid" id="memoGrid" style="margin-top:8px;"></div>
+      </div>
     </section>
 
     <!-- ===== 记账 ===== -->
@@ -997,7 +1023,7 @@ a.link{color:var(--primary-dark);text-decoration:underline;font-weight:600;}
   <!-- 底部栏 -->
   <div class="dock">
     <div class="dock-item active" data-page="home"><span class="dock-emoji">🏠</span><span>首页</span></div>
-    <div class="dock-item" data-page="memo"><span class="dock-emoji">📝</span><span>备忘</span></div>
+    <div class="dock-item" data-page="memo"><span class="dock-emoji">📊</span><span>总结</span></div>
     <div class="dock-add" onclick="openSheet('memo')">+</div>
     <div class="dock-item" data-page="money"><span class="dock-emoji">💰</span><span>记账</span></div>
     <div class="dock-item" id="dockMenu"><span class="dock-emoji">📋</span><span>菜单</span></div>
@@ -1005,7 +1031,7 @@ a.link{color:var(--primary-dark);text-decoration:underline;font-weight:600;}
 
   <!-- 通用弹层 -->
   <div class="sheet" id="sheet">
-    <div class="sheet-title" id="sheetTitle">新建备忘</div>
+    <div class="sheet-title" id="sheetTitle">写一条随手记</div>
     <div id="sheetBody"></div>
     <div class="sheet-actions">
       <button class="btn btn-soft" style="flex:1" onclick="closeSheet()">取消</button>
@@ -1018,8 +1044,8 @@ a.link{color:var(--primary-dark);text-decoration:underline;font-weight:600;}
 
 <script>
 /* ============ 数据 ============ */
-const PAGE_TITLES={home:'小魏工作台',fitness:'健身打卡',diet:'轻食日记',aigc:'AIGC学习',english:'英语单词',tweet:'推文外宣',money:'记账本',makeup:'美妆护肤',dress:'穿搭日记',tcm:'中医养生',podcast:'每日播客',memo:'备忘录',video:'热点二创',inspire:'选题灵感'};
-const QUICK=[{p:'fitness',e:'🏃',n:'健身'},{p:'diet',e:'🥗',n:'饮食'},{p:'tcm',e:'🌿',n:'中医'},{p:'makeup',e:'💄',n:'美妆'},{p:'dress',e:'👗',n:'穿搭'},{p:'aigc',e:'🤖',n:'AIGC'},{p:'english',e:'📖',n:'英语'},{p:'tweet',e:'📢',n:'推文'},{p:'podcast',e:'🎧',n:'播客'},{p:'memo',e:'📝',n:'备忘'},{p:'video',e:'🎬',n:'热点'},{p:'inspire',e:'💡',n:'选题'},{p:'money',e:'💰',n:'记账'}];
+const PAGE_TITLES={home:'小魏工作台',fitness:'健身打卡',diet:'轻食日记',aigc:'AIGC学习',english:'英语单词',tweet:'推文外宣',money:'记账本',makeup:'美妆护肤',dress:'穿搭日记',tcm:'中医养生',podcast:'每日播客',memo:'成长总结',video:'热点二创',inspire:'选题灵感'};
+const QUICK=[{p:'fitness',e:'🏃',n:'健身'},{p:'diet',e:'🥗',n:'饮食'},{p:'tcm',e:'🌿',n:'中医'},{p:'makeup',e:'💄',n:'美妆'},{p:'dress',e:'👗',n:'穿搭'},{p:'aigc',e:'🤖',n:'AIGC'},{p:'english',e:'📖',n:'英语'},{p:'tweet',e:'📢',n:'推文'},{p:'podcast',e:'🎧',n:'播客'},{p:'memo',e:'📊',n:'总结'},{p:'video',e:'🎬',n:'热点'},{p:'inspire',e:'💡',n:'选题'},{p:'money',e:'💰',n:'记账'}];
 const MEMO_COLORS=['#FFE4EF','#DFF8ED','#EDE4FF','#E0F0FB','#FFF5D6','#FFEDE0','#FDF0D8','#E4E8FB'];
 
 /* ========== 多设备同步层（离线优先 + 时间戳合并） ========== */
@@ -1134,6 +1160,7 @@ window.addEventListener('offline',function(){_wasOnline=false;_setDot('err','离
 
 let DB={
   memo:load('memo',[]),
+  dailyLog:load('dailyLog',{}),
   fit:load('fit',{photos:[],profile:{height:'',weight:'',goal:''},issues:[],records:[],checkins:{},customGuides:[]}),
   makeupNotes:load('makeupNotes',[]),
   makeup:load('makeup',{stageNotes:{}}),
@@ -1714,7 +1741,7 @@ function init(){
   if(h<6)hi.textContent='夜深了，小魏 🌙';else if(h<11)hi.textContent='早上好，小魏 🌅';
   else if(h<14)hi.textContent='中午好，小魏 ☀️';else if(h<18)hi.textContent='下午好，小魏 ☕';else if(h<22)hi.textContent='晚上好，小魏 🌆';else hi.textContent='夜深了，小魏 🌙';
   document.getElementById('quickGrid').innerHTML=QUICK.map(q=>`<div class="quick-item" onclick="go('${q.p}')"><div class="qi-emoji">${q.e}</div><div class="qi-label">${q.n}</div></div>`).join('');
-  renderMemo();renderFit();renderMakeup();renderDress();renderAigc();renderEn();renderTweet();renderMoney();renderInspire();renderRecipeLib();renderVideoPage();renderInspireLinks();renderConstitution();renderSeasonalTips();
+  renderSummary();renderFit();renderMakeup();renderDress();renderAigc();renderEn();renderTweet();renderMoney();renderInspire();renderRecipeLib();renderVideoPage();renderInspireLinks();renderConstitution();renderSeasonalTips();
   bindEvents();
   initHomeCarousel();
 }
@@ -1732,13 +1759,167 @@ function go(page){
   if(page==='fitness')renderFit();
 }
 
-/* ============ 备忘录 ============ */
+/* ============ 成长总结（日/月/年 + 打卡统计） ============ */
+// 每日活动日志
+function getDateKey(d){return d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate();}
+function getMonthKey(d){return d.getFullYear()+'/'+(d.getMonth()+1);}
+
+// 保存今日活动日志（每次渲染时调用）
+function logTodayActivity(){
+  if(!DB.dailyLog)DB.dailyLog={};
+  const dk=getDateKey(new Date());
+  if(DB.dailyLog[dk])return; // 今天已经记录过了
+  const todos=DB.homeTodos||[];
+  const done=todos.filter(t=>t.done).length;
+  const ci=DB.fit.checkins||{};
+  const fitDone=!!ci[dk];
+  const enToday=DB.en.today||0;
+  const monRecs=(DB.money.records||[]);
+  const now=new Date();
+  const monthRecs=monRecs.filter(r=>{
+    const rd=new Date(r.date||r.ts);
+    return rd.getMonth()===now.getMonth()&&rd.getFullYear()===now.getFullYear();
+  });
+  const dayOut=monRecs.filter(r=>{
+    const rd=new Date(r.date||r.ts);
+    return rd.getDate()===now.getDate()&&rd.getMonth()===now.getMonth()&&rd.getFullYear()===now.getFullYear()&&r.type!=='in';
+  }).reduce((s,r)=>s+(parseFloat(r.amount)||0),0);
+  DB.dailyLog[dk]={
+    todos:done,totalTodos:todos.length,
+    fitDone:fitDone,enWords:enToday,
+    moneyOut:dayOut,
+    ts:Date.now()
+  };
+  save('dailyLog',DB.dailyLog);
+}
+
+function renderSummary(){
+  logTodayActivity();
+  if(!DB.dailyLog)DB.dailyLog=load('dailyLog',{});
+  const now=new Date();
+  const dk=getDateKey(now);
+  const mk=getMonthKey(now);
+  const dailyLog=DB.dailyLog||{};
+  
+  // === 本月统计 ===
+  const monthDays=Object.keys(dailyLog).filter(k=>k.startsWith(mk));
+  const fitDays=monthDays.filter(k=>dailyLog[k]&&dailyLog[k].fitDone).length;
+  const totalTodo=monthDays.reduce((s,k)=>s+(dailyLog[k]?dailyLog[k].todos||0:0),0);
+  
+  document.getElementById('sumMonthDays').textContent=fitDays+'天';
+  // 连续打卡
+  let streak=0;let cd=new Date();
+  while(true){
+    const cdk=getDateKey(cd);
+    if(dailyLog[cdk]&&dailyLog[cdk].fitDone){streak++;cd.setDate(cd.getDate()-1);}
+    else break;
+  }
+  document.getElementById('sumStreak').textContent=streak+'天';
+  document.getElementById('sumTodoDone').textContent=totalTodo;
+  
+  // 本月支出
+  const monRecs=(DB.money.records||[]);
+  const mOut=monRecs.filter(r=>{
+    const rd=new Date(r.date||r.ts);
+    return rd.getMonth()===now.getMonth()&&rd.getFullYear()===now.getFullYear()&&r.type!=='in';
+  }).reduce((s,r)=>s+(parseFloat(r.amount)||0),0);
+  document.getElementById('sumMonthOut').textContent='¥'+mOut.toFixed(0);
+  
+  // === 本月打卡日历 ===
+  document.getElementById('sumCalTitle').textContent=now.getFullYear()+'年'+(now.getMonth()+1)+'月';
+  const cal=document.getElementById('sumCalendar');
+  const y=now.getFullYear(),m=now.getMonth();
+  const firstDay=new Date(y,m,1).getDay();
+  const daysInMonth=new Date(y,m+1,0).getDate();
+  const weekLabels='日一二三四五六'.split('');
+  let calHTML=weekLabels.map(w=>`<div style="font-size:10px;color:var(--text-light);padding:4px 0;">${w}</div>`).join('');
+  // 填充空白
+  for(let i=0;i<firstDay;i++)calHTML+='<div></div>';
+  for(let d=1;d<=daysInMonth;d++){
+    const cdk=y+'/'+(m+1)+'/'+d;
+    const isToday=(d===now.getDate());
+    const hasFit=dailyLog[cdk]&&dailyLog[cdk].fitDone;
+    const hasTodo=dailyLog[cdk]&&dailyLog[cdk].todos>0;
+    let bg='',dot='';
+    if(hasFit)bg='background:#A8E6CF;color:#fff;border-radius:50%;';
+    else if(hasTodo)bg='background:#FFEDE0;border-radius:50%;';
+    if(isToday)bg+='font-weight:800;box-shadow:0 0 0 2px #F0A0C0 inset;';
+    calHTML+=`<div style="font-size:12px;padding:6px 2px;${bg}">${d}</div>`;
+  }
+  cal.innerHTML=calHTML;
+  
+  // === 月度回顾 ===
+  const monEl=document.getElementById('sumMonthly');
+  const allMonths=Object.keys(dailyLog).reduce((acc,k)=>{
+    const mk2=k.split('/').slice(0,2).join('/');
+    if(!acc[mk2])acc[mk2]={days:0,fit:0,todos:0,enWords:0,moneyOut:0};
+    const log=dailyLog[k];
+    acc[mk2].days++;
+    if(log.fitDone)acc[mk2].fit++;
+    acc[mk2].todos+=log.todos||0;
+    acc[mk2].enWords+=log.enWords||0;
+    acc[mk2].moneyOut+=log.moneyOut||0;
+    return acc;
+  },{});
+  const monthKeys=Object.keys(allMonths).sort().reverse().slice(0,12);
+  if(monthKeys.length===0){
+    monEl.innerHTML='<div style="text-align:center;color:var(--text-light);padding:20px;font-size:13px;">📝 还没有记录，开始打卡后这里会出现每月总结～</div>';
+  }else{
+    monEl.innerHTML=monthKeys.map(mk2=>{
+      const mm=allMonths[mk2];
+      const rate=mm.days>0?Math.round(mm.fit/mm.days*100):0;
+      const [yy,mn]=mk2.split('/');
+      return `<div style="display:flex;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);gap:12px;">
+        <div style="font-weight:700;min-width:60px;font-size:14px;">${yy}年${mn}月</div>
+        <div style="flex:1;font-size:12px;color:var(--text-light);">
+          <span style="color:#A8E6CF;font-weight:600;">🏃 ${mm.fit}/${mm.days}天</span>
+          <span style="margin-left:8px;">打卡率 ${rate}%</span>
+          <span style="margin-left:8px;">✅ ${mm.todos}项待办</span>
+          ${mm.moneyOut>0?`<span style="margin-left:8px;">💸 ¥${mm.moneyOut.toFixed(0)}</span>`:''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+  
+  // === 年度总览 ===
+  const yrEl=document.getElementById('sumYearly');
+  const years=Object.keys(dailyLog).reduce((acc,k)=>{
+    const yr=k.split('/')[0];
+    if(!acc[yr])acc[yr]={days:0,fit:0,todos:0};
+    const log=dailyLog[k];
+    acc[yr].days++;
+    if(log.fitDone)acc[yr].fit++;
+    acc[yr].todos+=log.todos||0;
+    return acc;
+  },{});
+  const yrKeys=Object.keys(years).sort().reverse();
+  if(yrKeys.length===0){
+    yrEl.innerHTML='<div style="text-align:center;color:var(--text-light);padding:20px;font-size:13px;">🌟 坚持下来，年底这里会有满满的成就感～</div>';
+  }else{
+    yrEl.innerHTML=yrKeys.map(yr=>{
+      const yy=years[yr];
+      const rate=yy.days>0?Math.round(yy.fit/yy.days*100):0;
+      return `<div style="display:flex;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);gap:12px;">
+        <div style="font-weight:700;min-width:50px;font-size:16px;color:#F0A0C0;">${yr}</div>
+        <div style="flex:1;font-size:12px;color:var(--text-light);">
+          <span style="font-weight:600;">🏃 运动 ${yy.fit}天</span>
+          <span style="margin-left:8px;">打卡率 ${rate}%</span>
+          <span style="margin-left:8px;">✅ ${yy.todos}项待办</span>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  
+  // === 随手记（保留原备忘录） ===
+  renderMemo();
+}
 function renderMemo(){
   const g=document.getElementById('memoGrid');
-  if(DB.memo.length===0){g.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="empty-emoji">📝</div><div class="empty-tip">还没有备忘，点 + 添加第一条吧～</div></div>`;return;}
-  g.innerHTML=DB.memo.map((m,i)=>`<div class="memo-card" style="background:${MEMO_COLORS[m.color%MEMO_COLORS.length]}"><span class="mc-del" onclick="delMemo(${i})">✕</span><div class="mc-text">${esc(m.text)}</div><div class="mc-time">${m.time}</div></div>`).join('')+'<div class="memo-add" onclick="openSheet(\'memo\')">+</div>';
+  if(!g)return;
+  if(DB.memo.length===0){g.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="empty-emoji">📝</div><div class="empty-tip">还没有随手记，记录一下今天的想法吧～</div></div>`;return;}
+  g.innerHTML=DB.memo.map((m,i)=>`<div class="memo-card" style="background:${MEMO_COLORS[m.color%MEMO_COLORS.length]}"><span class="mc-del" onclick="delMemo(${i})">✕</span><div class="mc-text">${esc(m.text)}</div><div class="mc-time">${m.time}</div></div>`).join('');
 }
-function delMemo(i){DB.memo.splice(i,1);save('memo',DB.memo);renderMemo();toast('已删除 🗑️');}
+function delMemo(i){DB.memo.splice(i,1);save('memo',DB.memo);renderSummary();toast('已删除 🗑️');}
 
 /* ============ 健身 ============ */
 function renderFit(){
@@ -1888,6 +2069,7 @@ function renderFitSummary(){
 
 /* ============ 首页今日数据 + 待办清单 ============ */
 function renderHomeStats(){
+  logTodayActivity();
   const todayStr=((d=new Date())=>d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate())();
   const todos=DB.homeTodos||[];
   const done=todos.filter(t=>t.done).length;
@@ -3261,7 +3443,7 @@ function delInspireLink(i){DB.inspireLinks.splice(i,1);save('inspireLinks',DB.in
 /* ============ 弹层 ============ */
 function openSheet(mode){
   sheetMode=mode;const body=document.getElementById('sheetBody');const title=document.getElementById('sheetTitle');
-  if(mode==='memo'){title.textContent='新建备忘';body.innerHTML=`<textarea id="sheetInput" placeholder="写下你的想法…" style="width:100%;border:1.5px solid var(--border);border-radius:14px;padding:12px;min-height:90px;resize:none;outline:none;"></textarea>`;}
+  if(mode==='memo'){title.textContent='写一条随手记';body.innerHTML=`<textarea id="sheetInput" placeholder="写下今天的想法或收获…" style="width:100%;border:1.5px solid var(--border);border-radius:14px;padding:12px;min-height:90px;resize:none;outline:none;"></textarea>`;}
   else if(mode==='fitProfile'){const f=DB.fit.profile;const sel=DB.fit.issues||[];title.textContent='编辑体态信息';body.innerHTML=`<div class="row"><div class="field"><label>身高(cm)</label><input id="fpInH" type="number" value="${f.height}" placeholder="如 165"></div><div class="field"><label>体重(kg)</label><input id="fpInW" type="number" value="${f.weight}" placeholder="如 55"></div></div><div class="field"><label>想改善的问题（可多选）</label><div id="fpIssues" style="display:flex;flex-wrap:wrap;gap:8px;">${FIT_ISSUES.map(t=>`<span data-v="${t}" onclick="this.classList.toggle('sel')" class="issue-tag ${sel.includes(t)?'sel':''}">${t}</span>`).join('')}</div></div><div class="field"><label>其他想说明的</label><textarea id="fpInG" placeholder="如：减脂5kg、练出马甲线" style="min-height:50px;">${f.goal}</textarea></div>`;}
   else if(mode==='fitRecord'){title.textContent='记录今日体重';body.innerHTML=`<div class="field"><label>今日体重(kg)</label><input id="frW" type="number" placeholder="记录体重用于半月变化小结"></div><div class="field"><label>备注</label><input id="frNote" placeholder="如 感觉不错"></div>`;}
   else if(mode==='fitGuide'){title.textContent='添加自定义跟练视频';body.innerHTML=`<div class="field"><label>视频名称</label><input id="fgName" placeholder="如 帕梅拉10分钟瘦腿"></div><div class="field"><label>视频链接</label><input id="fgUrl" type="url" placeholder="粘贴B站/抖音/YouTube等视频链接"></div>`;}
@@ -3290,7 +3472,7 @@ function openSheet(mode){
 }
 function closeSheet(){wdPhotoSrc=null;document.getElementById('sheet').classList.remove('open');}
 function saveSheet(){
-  if(sheetMode==='memo'){const v=document.getElementById('sheetInput').value.trim();if(!v){toast('内容不能为空');return;}DB.memo.unshift({text:v,time:'刚刚',color:Math.floor(Math.random()*MEMO_COLORS.length)});save('memo',DB.memo);renderMemo();toast('备忘已保存 📝');}
+  if(sheetMode==='memo'){const v=document.getElementById('sheetInput').value.trim();if(!v){toast('内容不能为空');return;}DB.memo.unshift({text:v,time:'刚刚',color:Math.floor(Math.random()*MEMO_COLORS.length)});save('memo',DB.memo);renderSummary();toast('随手记已保存 📝');}
   else if(sheetMode==='fitProfile'){const h=document.getElementById('fpInH').value,w=document.getElementById('fpInW').value,g=document.getElementById('fpInG').value;const issues=[...document.querySelectorAll('#fpIssues .issue-tag.sel')].map(e=>e.dataset.v);DB.fit.profile={height:h,weight:w,goal:g};DB.fit.issues=issues;save('fit',DB.fit);renderFit();toast('体态信息已保存 ✨');}
   else if(sheetMode==='fitRecord'){const w=document.getElementById('frW').value,n=document.getElementById('frNote').value;if(!w){toast('请填写体重');return;}addFitRecord(w,n);}
   else if(sheetMode==='fitGuide'){const n=document.getElementById('fgName').value.trim(),u=document.getElementById('fgUrl').value.trim();if(!n||!u){toast('请填写视频名称和链接');return;}if(!u.startsWith('http')){toast('链接需以http开头');return;}if(!DB.fit.customGuides)DB.fit.customGuides=[];DB.fit.customGuides.unshift({n:n,url:u});save('fit',DB.fit);renderFit();toast('跟练视频已添加 🔗');}
