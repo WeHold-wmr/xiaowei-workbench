@@ -580,21 +580,21 @@ a.link{color:var(--primary-dark);text-decoration:underline;font-weight:600;}
     <section class="page t-diet" id="page-diet">
       <div class="banner theme-grad">
         <h2>减脂轻食计划 🥗</h2>
-        <p>输入家里有的食材，自动生成一天减脂轻食菜单～</p>
+        <p>输入家里有的食材，自动生成一周减脂轻食菜单～</p>
         <span class="b-emoji">🍳</span>
       </div>
       <div class="card">
         <div class="card-title"><span class="ct-icon theme-bg">🥦</span>我的食材</div>
         <div class="tip-card theme-bg" style="margin-bottom:12px;">💡 输入家里现有的食材（用逗号或空格分开），如：鸡胸肉、西兰花、鸡蛋、番茄</div>
-        <textarea id="dietInput" placeholder="例如：鸡胸肉 西兰花 鸡蛋 番茄 豆腐..." style="width:100%;border:1.5px solid var(--border);border-radius:14px;padding:12px;min-height:70px;resize:none;outline:none;font-size:14px;"></textarea>
+        <textarea id="dietInput" placeholder="例如：鸡胸肉 西兰花 鸡蛋 番茄 豆腐...（也可以点下面菜库的 + 按钮自动添加食材）" style="width:100%;border:1.5px solid var(--border);border-radius:14px;padding:12px;min-height:70px;resize:none;outline:none;font-size:14px;"></textarea>
         <div style="display:flex;gap:10px;margin-top:12px;">
-          <button class="btn btn-primary" style="flex:1" onclick="dietGenerate()">🍽️ 生成今日菜单</button>
+          <button class="btn btn-primary" style="flex:1" onclick="dietGenerate()">📅 生成一周菜单</button>
           <button class="btn btn-soft" style="flex:1" onclick="dietGenerate(true)">🔀 换一套搭配</button>
         </div>
       </div>
       <div id="dietResult"></div>
       <div class="card">
-        <div class="card-title"><span class="ct-icon theme-bg">📒</span>减脂轻食菜库</div>
+        <div class="card-title"><span class="ct-icon theme-bg">📒</span>减脂轻食菜库 <span style="font-size:11px;color:var(--text-light);font-weight:400;">点击 + 添加食材到上方</span></div>
         <div class="tag-cloud" id="recipeLib"></div>
       </div>
     </section>
@@ -1236,6 +1236,49 @@ const RECIPES={
 };
 const STAPLES=['蒸紫薯','水煮玉米','糙米饭一小碗','全麦面包一片','燕麦粥'];
 const SNACKS=['一小把原味坚果','无糖酸奶一杯','一个苹果','一根香蕉','小番茄一小碗','水煮蛋一个','黄瓜一根','低脂牛奶一杯'];
+// 每道菜需要的原始食材（用于菜库 + 按钮添加 & 智能配菜判断）
+const RECIPE_INGREDIENTS={
+  '香煎鸡胸肉(180kal)':['鸡胸肉'],
+  '鸡胸蔬菜沙拉':['鸡胸肉'],
+  '手撕鸡丝拌菜':['鸡胸肉'],
+  '番茄炒蛋':['番茄','鸡蛋'],
+  '蒸蛋羹':['鸡蛋'],
+  '水煮蛋':['鸡蛋'],
+  '白灼西兰花':['西兰花'],
+  '蒜蓉西兰花':['西兰花'],
+  '凉拌豆腐':['豆腐'],
+  '番茄豆腐汤':['番茄','豆腐'],
+  '麻婆豆腐(减脂版)':['豆腐'],
+  '番茄蛋汤':['番茄','鸡蛋'],
+  '凉拌黄瓜':['黄瓜'],
+  '黄瓜炒蛋':['黄瓜','鸡蛋'],
+  '白灼虾':['虾'],
+  '虾仁西兰花':['虾','西兰花'],
+  '虾仁蒸蛋':['虾','鸡蛋'],
+  '水煮牛肉':['牛肉'],
+  '番茄牛腩':['番茄','牛肉'],
+  '芹菜炒牛肉':['芹菜','牛肉'],
+  '蒸紫薯':['紫薯'],
+  '紫薯粥':['紫薯'],
+  '水煮玉米':['玉米'],
+  '玉米沙拉':['玉米'],
+  '凉拌菠菜':['菠菜'],
+  '菠菜蛋汤':['菠菜','鸡蛋'],
+  '凉拌芹菜':['芹菜'],
+  '醋溜白菜':['白菜'],
+  '白菜豆腐汤':['白菜','豆腐'],
+  '萝卜排骨汤(少油)':['萝卜','排骨'],
+  '凉拌萝卜丝':['萝卜'],
+  '少油烧茄子':['茄子'],
+  '蒸茄子':['茄子'],
+  '清蒸排骨':['排骨'],
+  '清蒸鱼':['鱼'],
+  '番茄鱼':['番茄','鱼'],
+  '蚝油蘑菇':['蘑菇'],
+  '蘑菇汤':['蘑菇'],
+  '凉拌豆芽':['豆芽'],
+  '豆芽炒粉条(少油)':['豆芽']
+};
 
 /* ============ 体态问题 & 视频跟练库 ============ */
 const FIT_ISSUES=['圆肩驼背','骨盆前倾','小肚子','腿粗瘦腿','副乳拜拜肉','臀部扁平','斜方肌大','脖子前倾','全身减脂','体态矫正','练髋瘦腿','拉伸'];
@@ -2133,58 +2176,109 @@ function toggleHomeTodo(idx){
 function renderRecipeLib(){
   const lib=document.getElementById('recipeLib');
   const all=[];Object.values(RECIPES).forEach(arr=>arr.forEach(r=>all.push(r)));
-  lib.innerHTML=[...new Set(all)].map(r=>`<span class="tag theme-bg theme-text">${r}</span>`).join('');
+  const uniq=[...new Set(all)];
+  lib.innerHTML=uniq.map(r=>{
+    const ings=RECIPE_INGREDIENTS[r]||[];
+    const ingStr=ings.join('\u3001');
+    const safeName=r.replace(/'/g,"\\'");
+    return `<span class="tag theme-bg theme-text" style="display:inline-flex;align-items:center;gap:4px;padding-right:4px;">
+      <span>${r}</span>
+      <span onclick="event.stopPropagation();addRecipeIngredients('${safeName}')"
+        title="\u6dfb\u52a0\u98df\u6750\uff1a${ingStr}"
+        style="cursor:pointer;background:var(--primary-soft);color:var(--primary-dark);border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;">+</span>
+    </span>`;
+  }).join('');
 }
-function dietGenerate(){
+function addRecipeIngredients(dish){
+  const input=document.getElementById('dietInput');
+  const ings=RECIPE_INGREDIENTS[dish]||[];
+  if(ings.length===0){toast('\u6682\u65e0\u8be5\u83dc\u54c1\u7684\u98df\u6750\u6570\u636e');return;}
+  const cur=input.value.trim();
+  const curList=cur?cur.split(/[,\uff0c\u3001\\s]+/).filter(Boolean):[];
+  const newList=ings.filter(ing=>!curList.includes(ing));
+  if(newList.length===0){toast('\u8fd9\u4e9b\u98df\u6750\u5df2\u7ecf\u5728\u5217\u8868\u91cc\u5566\uff5e');return;}
+  input.value=cur+(cur?'\u3001':'')+newList.join('\u3001');
+  toast('\u5df2\u6dfb\u52a0\u98df\u6750\uff1a'+newList.join('\u3001')+' \u2705');
+}
+function dietGenerate(shuffle){
   const input=document.getElementById('dietInput').value.trim();
-  if(!input){toast('请先输入家里有的食材～');return;}
-  const matched=[];
-  for(const k in RECIPES){const re=new RegExp(k);if(re.test(input)){RECIPES[k].forEach(r=>matched.push(r));}}
+  if(!input){toast('\u8bf7\u5148\u8f93\u5165\u5bb6\u91cc\u6709\u7684\u98df\u6750\uff0c\u6216\u8005\u70b9\u83dc\u5e93\u7684 + \u81ea\u52a8\u6dfb\u52a0\uff5e');return;}
+  const userIngs=input.split(/[,\uff0c\u3001\\s]+/).filter(Boolean);
+  const matchedRaw=[];
+  for(const k in RECIPES){
+    const re=new RegExp(k);
+    if(re.test(input)){
+      RECIPES[k].forEach(r=>{
+        const need=RECIPE_INGREDIENTS[r]||[];
+        if(need.every(ing=>userIngs.some(ui=>ui.includes(ing)||ing.includes(ui))))matchedRaw.push(r);
+      });
+    }
+  }
   const pick=arr=>arr[Math.floor(Math.random()*arr.length)];
-  // 提取纯菜名（去掉括号里的热量等信息），用于搜索视频
-  const dishName=r=>r.replace(/\([^)]*\)|（[^）]*）/g,'').trim();
-  // 生成一道菜的展示：菜名 + 看做法按钮
+  const dishName=r=>r.replace(/\([^)]*\)|[\uff08][^)]*[\uff09]/g,'').trim();
   const dishHtml=(dish,extra='')=>`<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
-    <span style="font-size:15px;font-weight:600;">${dish}${extra}</span>
-    <div style="display:flex;gap:5px;flex-wrap:wrap;">${renderVideoBtns(dishName(dish)+' 减脂做法')}</div></div>`;
+    <span style="font-size:14px;font-weight:600;">${dish}${extra}</span>
+    <div style="display:flex;gap:5px;flex-wrap:wrap;">${renderVideoBtns(dishName(dish)+' \u51cf\u8102\u505a\u6cd5')}</div></div>`;
   let html='';
-  if(matched.length===0){
-    html=`<div class="card"><div class="empty"><div class="empty-emoji">🤔</div><div class="empty-tip">没匹配到食材，试试输入：鸡胸肉、西兰花、鸡蛋、豆腐、虾仁等</div></div></div>`;
+  if(matchedRaw.length===0){
+    html=`<div class="card"><div class="empty"><div class="empty-emoji">\ud83e\udd14</div><div class="empty-tip">\u57fa\u4e8e\u4f60\u8f93\u5165\u7684\u98df\u6750\uff0c\u6ca1\u5339\u914d\u5230\u53ef\u505a\u7684\u83dc\u3002<br>\u8bd5\u8bd5\u6dfb\u52a0\uff1a\u9e21\u80f8\u8089\u3001\u897f\u5170\u82b1\u3001\u9e21\u86cb\u3001\u756a\u8304\u3001\u8c46\u8150\u3001\u867e\u4ec1\u7b49</div></div></div>`;
   }else{
-    const eggDishes=matched.filter(r=>r.includes('蛋'));
-    const vegDishes=matched.filter(r=>/西兰花|菠菜|白菜|萝卜|茄子|豆芽|黄瓜|蘑菇/.test(r));
-    const mainDishes=matched.filter(r=>!eggDishes.includes(r)&&!vegDishes.includes(r));
-    const breakfast=eggDishes.length?pick(eggDishes):(matched.length?pick(matched):'水煮蛋');
-    const lunch=mainDishes.length?pick(mainDishes):pick(matched);
-    let dinner=vegDishes.length?pick(vegDishes):pick(matched);
-    while(dinner===lunch&&matched.length>1)dinner=pick(matched);
-    const amSnack=pick(SNACKS);
-    const pmSnack=pick(SNACKS.filter(s=>s!==amSnack));
-    const bStaple=pick(STAPLES);
-    html=`<div class="card"><div class="card-title"><span class="ct-icon theme-bg">🌅</span>早餐</div>
-      <div class="tip-card theme-bg">${dishHtml(breakfast,' + '+bStaple)}</div>
-      <div style="font-size:12px;color:var(--text-light);margin-top:6px;">约 280-350 kcal · 蛋白质开启一天</div></div>
-    <div class="card"><div class="card-title"><span class="ct-icon theme-bg">🍎</span>上午加餐</div>
-      <div class="tip-card theme-bg" style="font-size:14px;font-weight:600;">${amSnack}</div>
-      <div style="font-size:12px;color:var(--text-light);margin-top:6px;">约 80-100 kcal</div></div>
-    <div class="card"><div class="card-title"><span class="ct-icon theme-bg">☀️</span>午餐</div>
-      <div class="tip-card theme-bg">${dishHtml(lunch,' + 糙米饭一小碗')}</div>
-      <div style="font-size:12px;color:var(--text-light);margin-top:6px;">约 420-500 kcal · 减脂期最丰盛的一餐</div></div>
-    <div class="card"><div class="card-title"><span class="ct-icon theme-bg">🥜</span>下午加餐</div>
-      <div class="tip-card theme-bg" style="font-size:14px;font-weight:600;">${pmSnack}</div>
-      <div style="font-size:12px;color:var(--text-light);margin-top:6px;">约 80-100 kcal · 防止晚餐暴食</div></div>
-    <div class="card"><div class="card-title"><span class="ct-icon theme-bg">🌙</span>晚餐</div>
-      <div class="tip-card theme-bg">${dishHtml(dinner)}</div>
-      <div style="font-size:12px;color:var(--text-light);margin-top:6px;">约 300-350 kcal · 七分饱，少油少盐</div></div>
-    <div class="card"><div class="tip-card theme-bg" style="font-size:13px;line-height:1.8;">
-      💧 <b>今日饮水目标</b>：8 杯（约 2000ml）<br>
-      📊 <b>全天总热量</b>：约 1160-1400 kcal（减脂适宜区间）<br>
-      💡 <b>搭配建议</b>：减脂期保证蛋白质充足，主食选粗粮，多吃蔬菜。配合运动效果更好，感到饥饿时优先补充蔬菜和蛋白质。<br>
-      📕 <b>不会做？</b>点每道菜旁边的小红书/抖音/B站按钮，自己选平台看做法视频～
+    const eggDishes=matchedRaw.filter(r=>r.includes('\u86cb'));
+    const vegDishes=matchedRaw.filter(r=>/\u897f\u5170\u82b1|\u83e0\u83dc|\u767d\u83dc|\u841d\u535c|\u8304\u5b50|\u8c46\u82bd|\u9ec4\u74dc|\u8611\u83c7|\u82b9\u83dc/.test(r));
+    const mainDishes=matchedRaw.filter(r=>!eggDishes.includes(r)&&!vegDishes.includes(r));
+    const dayNames=['\u5468\u4e00','\u5468\u4e8c','\u5468\u4e09','\u5468\u56db','\u5468\u4e94','\u5468\u516d','\u5468\u65e5'];
+    const dayEmojis=['\ud83c\udf1e','\ud83d\udcaa','\ud83d\udd25','\u26a1','\ud83c\udf43','\ud83c\udf08','\u2728'];
+    const usedDishes=[];
+    function pickUnique(arr){
+      const avail=arr.filter(d=>!usedDishes.includes(d));
+      if(avail.length===0)return pick(arr);
+      const chosen=pick(avail);
+      usedDishes.push(chosen);
+      return chosen;
+    }
+    html=`<div class="card"><div class="card-title"><span class="ct-icon theme-bg">\ud83d\udccb</span>\u53ef\u505a\u7684\u83dc</div>
+      <div class="tip-card theme-bg" style="font-size:13px;line-height:1.8;">
+      \u57fa\u4e8e\u98df\u6750\uff1a<b>${userIngs.join('\u3001')}</b><br>
+      \u53ef\u5236\u4f5c <b>${matchedRaw.length}</b> \u9053\u83dc\uff1a${matchedRaw.map(r=>`<span style="white-space:nowrap;">\ud83c\udf73 ${r}</span>`).join('\u3000')}
+      </div></div>`;
+    dayNames.forEach((day,i)=>{
+      const bfast=eggDishes.length?pickUnique(eggDishes):pickUnique(matchedRaw);
+      const bStaple=pick(STAPLES);
+      const lunch=mainDishes.length?pickUnique(mainDishes):pickUnique(matchedRaw);
+      let dinner=vegDishes.length?pickUnique(vegDishes):pickUnique(matchedRaw);
+      while(dinner===lunch&&matchedRaw.length>1)dinner=pickUnique(matchedRaw);
+      const amSnack=pick(SNACKS);
+      let pmSnack=pick(SNACKS.filter(s=>s!==amSnack));
+      html+=`<div class="card" style="border-left:4px solid ${['#F0A0C0','#FFB88C','#A8E6CF','#B0C4FF','#F5E0A0','#E0B0FF','#A0E0E0'][i]};">
+        <div class="card-title"><span>${dayEmojis[i]}</span> ${day}</div>
+        <div style="font-size:12px;padding:4px 0;color:var(--text-light);border-bottom:1px dashed var(--border);margin-bottom:8px;">
+          \ud83c\udf05 \u65e9\u9910 ${dishHtml(bfast,' + '+bStaple)}
+        </div>
+        <div style="font-size:12px;padding:4px 0;color:var(--text-light);border-bottom:1px dashed var(--border);margin-bottom:8px;">
+          \ud83c\udf4e \u52a0\u9910 <span style="font-weight:600;color:var(--text);">${amSnack}</span>
+        </div>
+        <div style="font-size:12px;padding:4px 0;color:var(--text-light);border-bottom:1px dashed var(--border);margin-bottom:8px;">
+          \u2600\ufe0f \u5348\u9910 ${dishHtml(lunch,' + \u7cd9\u7c73\u996d\u4e00\u5c0f\u7897')}
+        </div>
+        <div style="font-size:12px;padding:4px 0;color:var(--text-light);border-bottom:1px dashed var(--border);margin-bottom:8px;">
+          \ud83e\udd5c \u52a0\u9910 <span style="font-weight:600;color:var(--text);">${pmSnack}</span>
+        </div>
+        <div style="font-size:12px;padding:4px 0;color:var(--text-light);">
+          \ud83c\udf19 \u665a\u9910 ${dishHtml(dinner)}
+        </div>
+      </div>`;
+    });
+    html+=`<div class="card"><div class="tip-card theme-bg" style="font-size:13px;line-height:1.8;">
+      \ud83d\udca7 <b>\u6bcf\u5929\u996e\u6c34\u76ee\u6807</b>\uff1a8 \u676f\uff08\u7ea6 2000ml\uff09<br>
+      \ud83d\udcca <b>\u65e5\u5747\u603b\u70ed\u91cf</b>\uff1a\u7ea6 1160-1400 kcal\uff08\u51cf\u8102\u9002\u5b9c\u533a\u95f4\uff09<br>
+      \ud83d\udca1 <b>\u642d\u914d\u5efa\u8bae</b>\uff1a\u51cf\u8102\u671f\u4fdd\u8bc1\u86cb\u767d\u8d28\u5145\u8db3\uff0c\u4e3b\u98df\u9009\u7c97\u7cae\uff0c\u591a\u5403\u852c\u83dc\u3002\u914d\u5408\u8fd0\u52a8\u6548\u679c\u66f4\u597d\u3002<br>
+      \ud83d\udcd5 <b>\u4e0d\u4f1a\u505a\uff1f</b>\u70b9\u6bcf\u9053\u83dc\u65c1\u8fb9\u7684\u6309\u94ae\u8df3\u8f6c App \u770b\u89c6\u9891\u6559\u7a0b\uff5e
     </div></div>`;
   }
   document.getElementById('dietResult').innerHTML=html;
   document.getElementById('dietResult').scrollIntoView({behavior:'smooth'});
+  DB.dietMenu={ingredients:userIngs,matched:matchedRaw,date:today()};
+  save('dietMenu',DB.dietMenu);
 }
 
 /* ============ 中医 ============ */
