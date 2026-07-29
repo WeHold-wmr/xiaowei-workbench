@@ -2,7 +2,7 @@
   "name": "小魏工作台",
   "short_name": "小魏工作台",
   "description": "小魏的个人移动端工作台",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#FFF5F8",
