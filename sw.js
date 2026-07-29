@@ -1,9 +1,12 @@
-const CACHE = 'xw-v2';
+const CACHE = 'xw-v3';
 
 const PRECACHE = [
   '/',
   '/index.html',
-  '/manifest.json'
+  '/manifest.json',
+  '/icon-192.png',
+  '/icon-512.png',
+  '/avatar.png'
 ];
 
 // 安装时预缓存核心文件
