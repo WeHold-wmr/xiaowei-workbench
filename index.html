@@ -559,9 +559,45 @@ a.link{color:var(--primary-dark);text-decoration:underline;font-weight:600;}
 .reader.theme-night .toc-inner,.reader.theme-night .toc-list{background:#1d1d1d;color:#ddd;}
 .reader.theme-night .toc-head{border-color:rgba(255,255,255,.12);}
 .reader.theme-night .toc-item:active{background:rgba(255,255,255,.08);}
+.chip-row{display:flex;gap:8px;overflow-x:auto;padding:2px 0 6px;-webkit-overflow-scrolling:touch;}
+.chip{flex-shrink:0;font-size:13px;padding:6px 14px;border-radius:20px;background:var(--card);border:1px solid var(--border);cursor:pointer;color:var(--text-light);white-space:nowrap;}
+.chip.on{background:var(--primary);color:#fff;border-color:var(--primary);}
+.li-del{margin-left:8px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.06);color:var(--text-light);font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.pod-player{position:fixed;left:50%;transform:translateX(-50%);bottom:0;max-width:480px;width:100%;background:#fff;z-index:320;padding:14px 16px calc(14px + env(safe-area-inset-bottom));box-shadow:0 -4px 20px rgba(0,0,0,.15);display:none;border-radius:18px 18px 0 0;}
+.pod-player.show{display:block;}
+.pp-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-weight:700;font-size:14px;}
+.pp-close{cursor:pointer;color:var(--text-light);font-weight:400;}
 </style>
 <script>
 /* ============ 听书读书 ============ */
+/* ============ 播客 ============ */
+const POD_CATS={提升:'女生提升',搞钱:'努力挣钱',自爱:'好好爱自己',政经:'政史财经'};
+function SEED_PODCASTS(){return [
+ {id:'p1',name:'搞钱女孩',cat:'搞钱',note:'女生搞钱实战分享',link:'https://www.xiaoyuzhoufm.com/search/搞钱'},
+ {id:'p2',name:'自律修炼手册',cat:'提升',note:'如何养成自律习惯',link:'https://www.xiaoyuzhoufm.com/search/自律'},
+ {id:'p3',name:'高情商沟通术',cat:'提升',note:'说话的艺术',link:'https://www.xiaoyuzhoufm.com/search/沟通'},
+ {id:'p4',name:'历史的温度',cat:'政经',note:'以史为鉴开阔格局',link:'https://www.xiaoyuzhoufm.com/search/历史'},
+ {id:'p5',name:'财经早知道',cat:'政经',note:'每天5分钟懂经济',link:'https://www.xiaoyuzhoufm.com/search/财经'},
+ {id:'p6',name:'好好爱自己',cat:'自爱',note:'心理 / 自我关怀',link:'https://www.xiaoyuzhoufm.com/search/自我关怀'}
+];}
+function getPodLib(){let l=load('podLib',null);if(!l||!Array.isArray(l)){l=SEED_PODCASTS();save('podLib',l);}return l;}
+function savePodLib(l){save('podLib',l);}
+let _podCat='all';
+function podFilter(c){_podCat=c;const chips=document.querySelectorAll('#podChips .chip');for(let i=0;i<chips.length;i++)chips[i].classList.toggle('on',chips[i].dataset.cat===c);renderPodcast();}
+function renderPodcast(){
+ const lib=getPodLib();const list=document.getElementById('podList');
+ const items=_podCat==='all'?lib:lib.filter(function(p){return p.cat===_podCat;});
+ if(!items.length){if(list)list.innerHTML='';const e=document.getElementById('podEmpty');if(e)e.style.display='block';}
+ else{const e=document.getElementById('podEmpty');if(e)e.style.display='none';
+  if(list)list.innerHTML=items.map(function(p){
+   const act=p.audio?('onclick="openPodcast(\''+p.id+'\')"'):('onclick="window.open(\''+p.link+'\',\'_blank\')"');
+   return '<div class="list-item" '+act+'><span class="li-icon theme-bg">🎧</span><div class="li-main"><div class="li-title">'+esc(p.name)+'</div><div class="li-sub">'+(p.note||'')+'</div></div>'+(p.audio?'<span class="pill theme-bg theme-text">▶ 播放</span>':'<span class="pill theme-bg theme-text">去听↗</span>')+'<span class="li-del" onclick="event.stopPropagation();deletePodcast(\''+p.id+'\')">✕</span></div>';
+  }).join('');
+ }
+}
+function deletePodcast(id){if(!confirm('取消收藏这个播客？'))return;let lib=getPodLib().filter(function(p){return p.id!==id;});savePodLib(lib);renderPodcast();toast('已取消收藏');}
+function openPodcast(id){const p=getPodLib().find(function(x){return x.id===id;});if(!p||!p.audio)return;const pl=document.getElementById('podPlayer');const au=document.getElementById('podAudio');const ti=document.getElementById('podPlayerTitle');if(ti)ti.textContent=p.name;if(au){au.src=p.audio;au.play().catch(function(){});}if(pl)pl.classList.add('show');}
+function closePodcast(){const pl=document.getElementById('podPlayer');const au=document.getElementById('podAudio');if(au){au.pause();au.src='';}if(pl)pl.classList.remove('show');}
 const BOOK_BGS=['linear-gradient(135deg,#FFB6C1,#FF8FAB)','linear-gradient(135deg,#A8E6CF,#88D8B0)','linear-gradient(135deg,#98A8F0,#B5C0F5)','linear-gradient(135deg,#FFD3A5,#FD9D6F)','linear-gradient(135deg,#B5A0FF,#8E7CFF)','linear-gradient(135deg,#9AD0EC,#7FB5E6)'];
 let _bkCur=null,_bkSents=[],_bkIdx=0,_bkPlaying=false,_bkPaused=false,_bkVoices=[],_bkRate=1,_bkFs=18,_bkTheme='day',_bkGuard=false,_bkSaveT=null,_bkChaps=[];
 function esc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
@@ -710,7 +746,8 @@ function jumpToChap(ci){const el=document.querySelector('#readerText .chap[data-
       <a class="nav-item" data-page="aigc"><span class="nav-icon" style="background:#EDE4FF">🎨</span><span class="nav-text">AIGC学习</span></a>
       <a class="nav-item" data-page="english"><span class="nav-icon" style="background:#E0F0FB">📚</span><span class="nav-text">英语单词</span></a>
       <a class="nav-item" data-page="tweet"><span class="nav-icon" style="background:#FFE4EF">📣</span><span class="nav-text">推文外宣</span></a>
-      <a class="nav-item" data-page="podcast"><span class="nav-icon" style="background:#E4E8FB">📚</span><span class="nav-text">听书读书</span></a>
+      <a class="nav-item" data-page="podcast"><span class="nav-icon" style="background:#E4E8FB">🎧</span><span class="nav-text">每日播客</span></a>
+      <a class="nav-item" data-page="book"><span class="nav-icon" style="background:#EDE4FF">📚</span><span class="nav-text">听书读书</span></a>
       <div class="nav-label">创作与记录</div>
       <a class="nav-item" data-page="video"><span class="nav-icon" style="background:#F5E8FB">🎬</span><span class="nav-text">热点二创</span></a>
       <a class="nav-item" data-page="inspire"><span class="nav-icon" style="background:#FFF5D6">💡</span><span class="nav-text">选题灵感</span></a>
@@ -1117,8 +1154,36 @@ function jumpToChap(ci){const el=document.querySelector('#readerText .chap[data-
       </div>
     </section>
 
-    <!-- ===== 听书读书 ===== -->
+    <!-- ===== 每日播客 ===== -->
     <section class="page t-podcast" id="page-podcast">
+      <div class="banner theme-grad">
+        <h2>每日播客 🎧</h2>
+        <p>用耳朵成长：女生提升 · 努力搞钱 · 好好爱自己 · 政史财经</p>
+        <span class="b-emoji">🎙️</span>
+      </div>
+      <div class="chip-row" id="podChips">
+        <span class="chip on" data-cat="all" onclick="podFilter('all')">全部</span>
+        <span class="chip" data-cat="提升" onclick="podFilter('提升')">女生提升</span>
+        <span class="chip" data-cat="搞钱" onclick="podFilter('搞钱')">努力挣钱</span>
+        <span class="chip" data-cat="自爱" onclick="podFilter('自爱')">好好爱自己</span>
+        <span class="chip" data-cat="政经" onclick="podFilter('政经')">政史财经</span>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="ct-icon theme-bg">🎧</span>我的播客<span style="float:right;color:var(--primary);font-size:12px;cursor:pointer;" onclick="openSheet('podcast')">＋ 添加</span></div>
+        <div id="podList"></div>
+        <div id="podEmpty" class="tip-card theme-bg" style="font-size:13px;display:none;">还没有收藏播客，点右上角「＋ 添加」把常听的节目存进来～</div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="ct-icon theme-bg">🔍</span>去听听（按主题找播客）</div>
+        <div class="list-item" onclick="window.open('https://www.xiaoyuzhoufm.com/search/女性成长','_blank')"><span class="li-icon theme-bg">🌸</span><div class="li-main"><div class="li-title">女生提升自己</div><div class="li-sub">小宇宙：女性成长 / 自律 / 自我提升</div></div><span class="pill theme-bg theme-text">去听↗</span></div>
+        <div class="list-item" onclick="window.open('https://www.xiaoyuzhoufm.com/search/搞钱','_blank')"><span class="li-icon theme-bg">💰</span><div class="li-main"><div class="li-title">努力挣钱</div><div class="li-sub">小宇宙：搞钱 / 副业 / 理财</div></div><span class="pill theme-bg theme-text">去听↗</span></div>
+        <div class="list-item" onclick="window.open('https://www.xiaoyuzhoufm.com/search/自我关怀','_blank')"><span class="li-icon theme-bg">💗</span><div class="li-main"><div class="li-title">好好爱自己</div><div class="li-sub">小宇宙：心理 / 自我关怀</div></div><span class="pill theme-bg theme-text">去听↗</span></div>
+        <div class="list-item" onclick="window.open('https://www.xiaoyuzhoufm.com/search/历史','_blank')"><span class="li-icon theme-bg">📜</span><div class="li-main"><div class="li-title">政治 · 历史 · 财经</div><div class="li-sub">小宇宙：历史 / 财经 / 时政</div></div><span class="pill theme-bg theme-text">去听↗</span></div>
+      </div>
+    </section>
+
+    <!-- ===== 听书读书 ===== -->
+    <section class="page t-book" id="page-book">
       <div class="banner theme-grad">
         <h2>听书读书 📚</h2>
         <p>能看能听，像番茄小说一样随身读～</p>
@@ -1126,7 +1191,7 @@ function jumpToChap(ci){const el=document.querySelector('#readerText .chap[data-
       </div>
       <div style="display:flex;gap:10px;margin-bottom:12px;">
         <button class="btn btn-primary" style="flex:1" onclick="openSheet('book')">＋ 添加书籍</button>
-        <button class="btn btn-soft" style="flex:1" onclick="go('podcast')">🔄 刷新书架</button>
+        <button class="btn btn-soft" style="flex:1" onclick="renderBooks()">🔄 刷新书架</button>
       </div>
       <div class="card">
         <div class="card-title"><span class="ct-icon theme-bg">📊</span>我的阅读</div>
@@ -1445,8 +1510,8 @@ function jumpToChap(ci){const el=document.querySelector('#readerText .chap[data-
 
 <script>
 /* ============ 数据 ============ */
-const PAGE_TITLES={home:'小魏工作台',fitness:'健身打卡',diet:'轻食日记',aigc:'AIGC学习',english:'英语单词',tweet:'推文外宣',money:'记账本',makeup:'美妆护肤',dress:'穿搭日记',tcm:'中医养生',podcast:'听书读书',memo:'成长总结',video:'热点二创',inspire:'选题灵感',period:'经期记录',anniv:'纪念日'};
-const QUICK=[{p:'fitness',e:'🏃',n:'健身'},{p:'diet',e:'🥗',n:'饮食'},{p:'tcm',e:'🌿',n:'中医'},{p:'makeup',e:'💄',n:'美妆'},{p:'dress',e:'👗',n:'穿搭'},{p:'aigc',e:'🤖',n:'AIGC'},{p:'english',e:'📖',n:'英语'},{p:'tweet',e:'📢',n:'推文'},{p:'podcast',e:'📚',n:'听书'},{p:'period',e:'🩸',n:'经期'},{p:'anniv',e:'💝',n:'纪念'},{p:'memo',e:'📊',n:'总结'},{p:'video',e:'🎬',n:'热点'},{p:'inspire',e:'💡',n:'选题'},{p:'money',e:'💰',n:'记账'}];
+const PAGE_TITLES={home:'小魏工作台',fitness:'健身打卡',diet:'轻食日记',aigc:'AIGC学习',english:'英语单词',tweet:'推文外宣',money:'记账本',makeup:'美妆护肤',dress:'穿搭日记',tcm:'中医养生',podcast:'每日播客',book:'听书读书',memo:'成长总结',video:'热点二创',inspire:'选题灵感',period:'经期记录',anniv:'纪念日'};
+const QUICK=[{p:'fitness',e:'🏃',n:'健身'},{p:'diet',e:'🥗',n:'饮食'},{p:'tcm',e:'🌿',n:'中医'},{p:'makeup',e:'💄',n:'美妆'},{p:'dress',e:'👗',n:'穿搭'},{p:'aigc',e:'🤖',n:'AIGC'},{p:'english',e:'📖',n:'英语'},{p:'tweet',e:'📢',n:'推文'},{p:'podcast',e:'🎧',n:'播客'},{p:'book',e:'📚',n:'听书'},{p:'period',e:'🩸',n:'经期'},{p:'anniv',e:'💝',n:'纪念'},{p:'memo',e:'📊',n:'总结'},{p:'video',e:'🎬',n:'热点'},{p:'inspire',e:'💡',n:'选题'},{p:'money',e:'💰',n:'记账'}];
 const MEMO_COLORS=['#FFE4EF','#DFF8ED','#EDE4FF','#E0F0FB','#FFF5D6','#FFEDE0','#FDF0D8','#E4E8FB'];
 
 /* ========== 多设备同步层（离线优先 + 时间戳合并） ========== */
@@ -2188,7 +2253,7 @@ function init(){
   if(h<6)hi.textContent='夜深了，小魏 🌙';else if(h<11)hi.textContent='早上好，小魏 🌅';
   else if(h<14)hi.textContent='中午好，小魏 ☀️';else if(h<18)hi.textContent='下午好，小魏 ☕';else if(h<22)hi.textContent='晚上好，小魏 🌆';else hi.textContent='夜深了，小魏 🌙';
   document.getElementById('quickGrid').innerHTML=QUICK.map(q=>`<div class="quick-item" onclick="go('${q.p}')"><div class="qi-emoji">${q.e}</div><div class="qi-label">${q.n}</div></div>`).join('');
-  renderSummary();renderFit();renderMakeup();renderDress();renderAigc();renderEn();renderTweet();renderMoney();renderPeriod();renderAnnivs();renderInspire();renderRecipeLib();showDietTip(0);renderVideoPage();renderInspireLinks();renderConstitution();renderSeasonalTips();renderBooks();
+  renderSummary();renderFit();renderMakeup();renderDress();renderAigc();renderEn();renderTweet();renderMoney();renderPeriod();renderAnnivs();renderInspire();renderRecipeLib();showDietTip(0);renderVideoPage();renderInspireLinks();renderConstitution();renderSeasonalTips();renderBooks();renderPodcast();
   bindEvents();
   initHomeCarousel();
 }
@@ -2206,7 +2271,8 @@ function go(page){
   if(page==='fitness'){renderFit();setTimeout(function(){drawMeasChart();},100);}
   if(page==='anniv')renderAnnivs();
   if(page==='period')renderPeriod();
-  if(page==='podcast')renderBooks();
+  if(page==='podcast')renderPodcast();
+  if(page==='book')renderBooks();
 }
 
 /* ============ 成长总结（日/月/年 + 打卡统计） ============ */
@@ -4550,6 +4616,7 @@ function openSheet(mode){
     <div class="field"><label>颜色</label><select id="wdColor" style="width:100%;border:1.5px solid var(--border);border-radius:12px;padding:10px;outline:none;">${WD_COLORS.map(c=>`<option>${c}</option>`).join('')}</select></div></div>
     <div class="field"><label>适合季节</label><select id="wdSeason" style="width:100%;border:1.5px solid var(--border);border-radius:12px;padding:10px;outline:none;">${WD_SEASONS.map(s=>`<option ${s==='通用'?'selected':''}>${s}</option>`).join('')}</select></div>
     <div class="field"><label>备注（品牌/尺码等）</label><input id="wdNote" placeholder="如 UNIQLO M码"></div>`;}
+  else if(mode==='podcast'){title.textContent='添加播客';body.innerHTML=`<div class="field"><label>节目名称 *</label><input id="podName" placeholder="如 某某电台 / 播客名"></div><div class="field"><label>分类</label><select id="podCat" style="width:100%;border:1.5px solid var(--border);border-radius:12px;padding:10px;outline:none;"><option value="提升">女生提升</option><option value="搞钱">努力挣钱</option><option value="自爱">好好爱自己</option><option value="政经">政史财经</option></select></div><div class="field"><label>收听链接（小宇宙 / 喜马拉雅 / Apple Podcasts 等）</label><input id="podLink" placeholder="https://..."></div><div class="field"><label>音频直链（可选，填了可在 App 内直接播放 .mp3）</label><input id="podAudio" placeholder="https://...mp3"></div>`;}
   else if(mode==='book'){title.textContent='添加书籍';body.innerHTML=`<div class="field"><label>书名 *</label><input id="bkTitle" placeholder="如 小王子、我的读书笔记"></div><div class="row"><div class="field" style="flex:1"><label>作者</label><input id="bkAuthor" placeholder="可选"></div><div class="field" style="flex:0 0 84px"><label>封面</label><input id="bkEmoji" value="📖" maxlength="2" style="text-align:center;font-size:20px;"></div></div><div class="field"><label>正文（粘贴文字，或导入 txt）<span style="float:right;color:var(--primary);font-size:12px;cursor:pointer;" onclick="document.getElementById('bkFile').click()">📂 导入txt</span></label><textarea id="bkText" placeholder="把书的正文粘贴到这里，就能在 App 内阅读 + 语音听书…" style="min-height:120px;"></textarea><input type="file" id="bkFile" accept=".txt,text/plain" hidden onchange="onBookFile(event)"></div><div class="field"><label>外部链接（可选，点「去原站」跳去平台读听）</label><input id="bkUrl" placeholder="https://fanqienovel.com/... 或微信读书链接"></div>`;}
   document.getElementById('sheet').classList.add('open');
   setTimeout(()=>{const i=document.querySelector('#sheetBody input,#sheetBody textarea');if(i)i.focus();},300);
@@ -4572,6 +4639,7 @@ function saveSheet(){
   else if(sheetMode==='dressProfile'){DB.dress.bodyType=document.getElementById('dpBody').value;DB.dress.style=document.getElementById('dpStyle').value;DB.dress.issues=[...document.querySelectorAll('#dpIssues .issue-tag.sel')].map(e=>e.dataset.v);save('dress',DB.dress);renderDress();toast('穿搭档案已保存 👗');}
   else if(sheetMode==='dressLink'){const t=document.getElementById('dlTitle').value.trim(),u=document.getElementById('dlUrl').value.trim(),p=document.getElementById('dlPlat').value,n=document.getElementById('dlNote').value.trim();if(!t||!u){toast('请填写标题和链接');return;}DB.dress.links.unshift({title:t,url:u,plat:p,note:n});save('dress',DB.dress);renderDressLinks();toast('穿搭链接已收藏 ⭐');}
   else if(sheetMode==='wardrobeAdd'){saveWardrobeItem();return;}
+  else if(sheetMode==='podcast'){const n=document.getElementById('podName').value.trim();if(!n){toast('请填写节目名称');return;}const link=document.getElementById('podLink').value.trim();const audio=document.getElementById('podAudio').value.trim();if(!link&&!audio){toast('请至少填写收听链接或音频直链');return;}if(link&&!link.startsWith('http')){toast('链接需以 http 开头');return;}const lib=getPodLib();lib.unshift({id:'p'+Date.now(),name:n,cat:document.getElementById('podCat').value,note:'',link:link,audio:audio});savePodLib(lib);renderPodcast();toast('播客已收藏 🎧');}
   else if(sheetMode==='book'){const t=document.getElementById('bkTitle').value.trim();if(!t){toast('请填写书名');return;}const lib=getBookLib();lib.unshift({id:'b'+Date.now(),title:t,author:document.getElementById('bkAuthor').value.trim(),emoji:document.getElementById('bkEmoji').value.trim()||'📖',text:document.getElementById('bkText').value,url:document.getElementById('bkUrl').value.trim(),progress:0,addedAt:Date.now()});saveBookLib(lib);renderBooks();toast('书籍已添加 📚');}
   closeSheet();
 }
@@ -4799,5 +4867,9 @@ if('serviceWorker' in navigator){
     <div id="readerGo" style="display:none;"></div>
   </div>
 </div>
+  <div class="pod-player" id="podPlayer">
+    <div class="pp-head"><span id="podPlayerTitle"></span><span class="pp-close" onclick="closePodcast()">✕</span></div>
+    <audio id="podAudio" controls style="width:100%;"></audio>
+  </div>
 </body>
 </html>
