@@ -525,12 +525,12 @@ a.link{color:var(--primary-dark);text-decoration:underline;font-weight:600;}
 /* ============ 播客 ============ */
 const POD_CATS={提升:'女生提升',搞钱:'努力挣钱',自爱:'好好爱自己',政经:'政史财经'};
 function SEED_PODCASTS(){return [
- {id:'p1',name:'搞钱女孩',cat:'搞钱',note:'女生搞钱实战分享',link:'https://www.xiaoyuzhoufm.com/search/搞钱'},
- {id:'p2',name:'自律修炼手册',cat:'提升',note:'如何养成自律习惯',link:'https://www.xiaoyuzhoufm.com/search/自律'},
- {id:'p3',name:'高情商沟通术',cat:'提升',note:'说话的艺术',link:'https://www.xiaoyuzhoufm.com/search/沟通'},
- {id:'p4',name:'历史的温度',cat:'政经',note:'以史为鉴开阔格局',link:'https://www.xiaoyuzhoufm.com/search/历史'},
- {id:'p5',name:'财经早知道',cat:'政经',note:'每天5分钟懂经济',link:'https://www.xiaoyuzhoufm.com/search/财经'},
- {id:'p6',name:'好好爱自己',cat:'自爱',note:'心理 / 自我关怀',link:'https://www.xiaoyuzhoufm.com/search/自我关怀'}
+ {id:'p1',name:'搞钱女孩',cat:'搞钱',note:'女生搞钱实战分享',link:'https://podcasts.apple.com/search?term=搞钱'},
+ {id:'p2',name:'自律修炼手册',cat:'提升',note:'如何养成自律习惯',link:'https://podcasts.apple.com/search?term=自律'},
+ {id:'p3',name:'高情商沟通术',cat:'提升',note:'说话的艺术',link:'https://podcasts.apple.com/search?term=沟通'},
+ {id:'p4',name:'历史的温度',cat:'政经',note:'以史为鉴开阔格局',link:'https://podcasts.apple.com/search?term=历史'},
+ {id:'p5',name:'财经早知道',cat:'政经',note:'每天5分钟懂经济',link:'https://podcasts.apple.com/search?term=财经'},
+ {id:'p6',name:'好好爱自己',cat:'自爱',note:'心理 / 自我关怀',link:'https://podcasts.apple.com/search?term=自我关怀'}
 ];}
 function getPodLib(){let l=load('podLib',null);if(!l||!Array.isArray(l)){l=SEED_PODCASTS();save('podLib',l);}return l;}
 function savePodLib(l){save('podLib',l);}
@@ -1013,10 +1013,10 @@ function esc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g
       </div>
       <div class="card">
         <div class="card-title"><span class="ct-icon theme-bg">🔍</span>去听听（按主题找播客）</div>
-        <div class="list-item" onclick="window.open('https://www.xiaoyuzhoufm.com/search/女性成长','_blank')"><span class="li-icon theme-bg">🌸</span><div class="li-main"><div class="li-title">女生提升自己</div><div class="li-sub">小宇宙：女性成长 / 自律 / 自我提升</div></div><span class="pill theme-bg theme-text">去听↗</span></div>
-        <div class="list-item" onclick="window.open('https://www.xiaoyuzhoufm.com/search/搞钱','_blank')"><span class="li-icon theme-bg">💰</span><div class="li-main"><div class="li-title">努力挣钱</div><div class="li-sub">小宇宙：搞钱 / 副业 / 理财</div></div><span class="pill theme-bg theme-text">去听↗</span></div>
-        <div class="list-item" onclick="window.open('https://www.xiaoyuzhoufm.com/search/自我关怀','_blank')"><span class="li-icon theme-bg">💗</span><div class="li-main"><div class="li-title">好好爱自己</div><div class="li-sub">小宇宙：心理 / 自我关怀</div></div><span class="pill theme-bg theme-text">去听↗</span></div>
-        <div class="list-item" onclick="window.open('https://www.xiaoyuzhoufm.com/search/历史','_blank')"><span class="li-icon theme-bg">📜</span><div class="li-main"><div class="li-title">政治 · 历史 · 财经</div><div class="li-sub">小宇宙：历史 / 财经 / 时政</div></div><span class="pill theme-bg theme-text">去听↗</span></div>
+        <div class="list-item" onclick="window.open('https://podcasts.apple.com/search?term=女性成长','_blank')"><span class="li-icon theme-bg">🌸</span><div class="li-main"><div class="li-title">女生提升自己</div><div class="li-sub">Apple 播客：女性成长 / 自律 / 自我提升</div></div><span class="pill theme-bg theme-text">去听↗</span></div>
+        <div class="list-item" onclick="window.open('https://podcasts.apple.com/search?term=搞钱','_blank')"><span class="li-icon theme-bg">💰</span><div class="li-main"><div class="li-title">努力挣钱</div><div class="li-sub">Apple 播客：搞钱 / 副业 / 理财</div></div><span class="pill theme-bg theme-text">去听↗</span></div>
+        <div class="list-item" onclick="window.open('https://podcasts.apple.com/search?term=自我关怀','_blank')"><span class="li-icon theme-bg">💗</span><div class="li-main"><div class="li-title">好好爱自己</div><div class="li-sub">Apple 播客：心理 / 自我关怀</div></div><span class="pill theme-bg theme-text">去听↗</span></div>
+        <div class="list-item" onclick="window.open('https://podcasts.apple.com/search?term=历史','_blank')"><span class="li-icon theme-bg">📜</span><div class="li-main"><div class="li-title">政治 · 历史 · 财经</div><div class="li-sub">Apple 播客：历史 / 财经 / 时政</div></div><span class="pill theme-bg theme-text">去听↗</span></div>
       </div>
     </section>
 
@@ -4421,7 +4421,7 @@ function openSheet(mode){
     <div class="field"><label>颜色</label><select id="wdColor" style="width:100%;border:1.5px solid var(--border);border-radius:12px;padding:10px;outline:none;">${WD_COLORS.map(c=>`<option>${c}</option>`).join('')}</select></div></div>
     <div class="field"><label>适合季节</label><select id="wdSeason" style="width:100%;border:1.5px solid var(--border);border-radius:12px;padding:10px;outline:none;">${WD_SEASONS.map(s=>`<option ${s==='通用'?'selected':''}>${s}</option>`).join('')}</select></div>
     <div class="field"><label>备注（品牌/尺码等）</label><input id="wdNote" placeholder="如 UNIQLO M码"></div>`;}
-  else if(mode==='podcast'){title.textContent='添加播客';body.innerHTML=`<div class="field"><label>节目名称 *</label><input id="podName" placeholder="如 某某电台 / 播客名"></div><div class="field"><label>分类</label><select id="podCat" style="width:100%;border:1.5px solid var(--border);border-radius:12px;padding:10px;outline:none;"><option value="提升">女生提升</option><option value="搞钱">努力挣钱</option><option value="自爱">好好爱自己</option><option value="政经">政史财经</option></select></div><div class="field"><label>收听链接（小宇宙 / 喜马拉雅 / Apple Podcasts 等）</label><input id="podLink" placeholder="https://..."></div><div class="field"><label>音频直链（可选，填了可在 App 内直接播放 .mp3）</label><input id="podAudio" placeholder="https://...mp3"></div>`;}
+  else if(mode==='podcast'){title.textContent='添加播客';body.innerHTML=`<div class="field"><label>节目名称 *</label><input id="podName" placeholder="如 某某电台 / 播客名"></div><div class="field"><label>分类</label><select id="podCat" style="width:100%;border:1.5px solid var(--border);border-radius:12px;padding:10px;outline:none;"><option value="提升">女生提升</option><option value="搞钱">努力挣钱</option><option value="自爱">好好爱自己</option><option value="政经">政史财经</option></select></div><div class="field"><label>收听链接（Apple 播客 / 喜马拉雅 等）</label><input id="podLink" placeholder="https://..."></div><div class="field"><label>音频直链（可选，填了可在 App 内直接播放 .mp3）</label><input id="podAudio" placeholder="https://...mp3"></div>`;}
   document.getElementById('sheet').classList.add('open');
   setTimeout(()=>{const i=document.querySelector('#sheetBody input,#sheetBody textarea');if(i)i.focus();},300);
 }
