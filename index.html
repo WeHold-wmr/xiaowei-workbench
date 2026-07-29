@@ -546,15 +546,37 @@ a.link{color:var(--primary-dark);text-decoration:underline;font-weight:600;}
 .reader.theme-night #readerText{color:#d6d6d6;}
 .reader.theme-night .reader-top,.reader.theme-night .reader-foot{border-color:rgba(255,255,255,.12);}
 .reader.theme-night .rt-tools span,.reader.theme-night .rate-btn{background:rgba(255,255,255,.12);border-color:transparent;color:#ddd;}
+.chap{margin-bottom:8px;}
+.chap-title{font-size:15px;font-weight:700;color:var(--primary);margin:18px 0 8px;padding-left:8px;border-left:3px solid var(--primary);}
+.toc{position:absolute;inset:0;left:50%;transform:translateX(-50%);max-width:480px;background:rgba(0,0,0,.45);z-index:10;display:none;}
+.toc.open{display:block;}
+.toc-inner{position:absolute;bottom:0;left:0;right:0;max-height:72%;background:#fff;color:#222;border-radius:18px 18px 0 0;display:flex;flex-direction:column;overflow:hidden;padding-bottom:env(safe-area-inset-bottom);}
+.toc-head{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;font-weight:700;border-bottom:1px solid var(--border);}
+.toc-close{cursor:pointer;font-size:14px;color:var(--text-light);}
+.toc-list{overflow-y:auto;padding:8px 10px 16px;}
+.toc-item{padding:12px 12px;font-size:14px;border-radius:10px;cursor:pointer;}
+.toc-item:active{background:rgba(0,0,0,.05);}
+.reader.theme-night .toc-inner,.reader.theme-night .toc-list{background:#1d1d1d;color:#ddd;}
+.reader.theme-night .toc-head{border-color:rgba(255,255,255,.12);}
+.reader.theme-night .toc-item:active{background:rgba(255,255,255,.08);}
 </style>
 <script>
 /* ============ 听书读书 ============ */
 const BOOK_BGS=['linear-gradient(135deg,#FFB6C1,#FF8FAB)','linear-gradient(135deg,#A8E6CF,#88D8B0)','linear-gradient(135deg,#98A8F0,#B5C0F5)','linear-gradient(135deg,#FFD3A5,#FD9D6F)','linear-gradient(135deg,#B5A0FF,#8E7CFF)','linear-gradient(135deg,#9AD0EC,#7FB5E6)'];
-let _bkCur=null,_bkSents=[],_bkIdx=0,_bkPlaying=false,_bkPaused=false,_bkVoices=[],_bkRate=1,_bkFs=18,_bkTheme='day',_bkGuard=false,_bkSaveT=null;
+let _bkCur=null,_bkSents=[],_bkIdx=0,_bkPlaying=false,_bkPaused=false,_bkVoices=[],_bkRate=1,_bkFs=18,_bkTheme='day',_bkGuard=false,_bkSaveT=null,_bkChaps=[];
 function esc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function hashStr(s){let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h;}
 function coverBg(b){return BOOK_BGS[hashStr((b.id||b.title||'x')+'')%BOOK_BGS.length];}
 function splitSents(t){const parts=String(t).split(/([。！？!?；;\n])/);const res=[];let buf='';function flush(){const s=buf.trim().replace(/^[\s‘’'"]+|[\s‘’'"]+$/g,'');if(s)res.push(s);buf='';}for(let i=0;i<parts.length;i++){buf+=parts[i];if(/[。！？!?；;\n]/.test(parts[i]))flush();}if(buf.trim())flush();return res;}
+function splitChapters(text){
+  const lines=String(text||'').split(/\r?\n/);
+  const re=/^\s*(第[零一二三四五六七八九十百千0-9]+章|chapter\s*\d+|卷[一二三四五六七八九十]|序章|序言|引子|后记|尾声|番外[一二三四五六七八九十]?)/i;
+  const chaps=[];let cur={title:'正文',lines:[]};
+  for(let i=0;i<lines.length;i++){const ln=lines[i];if(re.test(ln)&&ln.trim().length<40){if(cur.lines.length||chaps.length)chaps.push(cur);cur={title:ln.trim(),lines:[]};}else cur.lines.push(ln);}
+  if(cur.lines.length||chaps.length)chaps.push(cur);
+  if(!chaps.length)chaps.push({title:'正文',lines:lines});
+  return chaps.map(function(c){return {title:c.title,text:c.lines.join('\n')};});
+}
 function SEED_BOOKS(){return [
  {id:'seed1',title:'夜航的灯',author:'小魏',emoji:'🛶',progress:0,addedAt:Date.now(),text:"海边的渔村有个古老的习惯：每晚出海的船，都要在桅杆上挂一盏小灯。\n灯不是为了照亮自己，而是为了让回港的船看见彼此，不至于在黑暗里相撞。\n老渔民阿伯说：'一盏灯的光很弱，可满海都是灯，夜路就不黑了。'\n后来我离开渔村去城里读书，常常在深夜的地铁里想起那盏灯。\n我们每个人不也都是海上的船吗？\n偶尔给别人一点微光——一句问候，一次让步，一个善意的提醒——世界就会比想象中亮一些。\n所以，今天也别忘了，把自己那盏灯点亮。"},
  {id:'seed2',title:'给三年后的自己',author:'小魏',emoji:'🌱',progress:0,addedAt:Date.now(),text:"亲爱的，展信安。\n如果你正读到这封信，说明我们已经一起走过了三年。\n不知道现在的你，是否还像从前那样，容易焦虑，又容易原谅自己？\n我想告诉那时的你：你担心的很多事，其实最后都成了路过的风景。\n考砸的试、搞砸的汇报、没说出口的喜欢，时间都会替你轻轻合上。\n希望你保住了三件东西：对生活的好奇，对他人的温柔，以及半夜饿了对一碗面的热爱。\n如果累了，就慢一点，没有人规定你必须一直跑。\n记得，你已经做得很好了。"}
@@ -588,7 +610,7 @@ function deleteBook(id){if(!confirm('确定删除这本书？'))return;let lib=g
 function onBookFile(e){const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=function(){const ta=document.getElementById('bkText');if(ta)ta.value=rd.result;toast('已导入：'+f.name);};rd.readAsText(f);}
 function loadReaderPrefs(){return load('readerPrefs',{fs:18,theme:'day',rate:1});}
 function saveReaderPrefs(){save('readerPrefs',{fs:_bkFs,theme:_bkTheme,rate:_bkRate});}
-function setPlayUI(on){const b=document.getElementById('rfPlay');if(b)b.textContent=on?'⏸':'▶️';}
+function setPlayUI(on){const b=document.getElementById('rfPlay');if(b)b.textContent=on?'⏸':'▶️';if('mediaSession' in navigator){try{navigator.mediaSession.playbackState=on?'playing':'paused';}catch(e){}}}
 function pickZhVoice(){if(!_bkVoices.length&&window.speechSynthesis)_bkVoices=speechSynthesis.getVoices();return _bkVoices.find(function(v){return /zh|cmn|Chinese/i.test(v.lang+v.name);})||null;}
 function speakFrom(i){
  if(!_bkSents.length)return;
@@ -602,16 +624,25 @@ function speakFrom(i){
 }
 function togglePlay(){if(!_bkCur||!_bkSents.length){toast('这本书没有正文可朗读');return;}if(_bkPlaying){_bkPlaying=false;_bkPaused=true;if(window.speechSynthesis)speechSynthesis.cancel();setPlayUI(false);}else{_bkPlaying=true;_bkPaused=false;speakFrom(_bkIdx);}}
 function setRate(r){_bkRate=r;saveReaderPrefs();const bs=document.querySelectorAll('.rate-btn');for(let i=0;i<bs.length;i++)bs[i].classList.toggle('on',parseFloat(bs[i].dataset.r)===r);if(_bkPlaying){if(window.speechSynthesis)speechSynthesis.cancel();speakFrom(_bkIdx);}}
-function highlightSen(i){const old=document.querySelectorAll('#readerText .sen.on');for(let i=0;i<old.length;i++)old[i].classList.remove('on');const el=document.querySelector('#readerText .sen[data-i="'+i+'"]');if(el){el.classList.add('on');_bkGuard=true;const tv=document.getElementById('readerText');tv.scrollTop=el.offsetTop-tv.clientHeight/2;setTimeout(function(){_bkGuard=false;},400);}}
+function highlightSen(i){const old=document.querySelectorAll('#readerText .sen.on');for(let i=0;i<old.length;i++)old[i].classList.remove('on');const el=document.querySelector('#readerText .sen[data-gi="'+i+'"]');if(el){el.classList.add('on');_bkGuard=true;const tv=document.getElementById('readerText');tv.scrollTop=el.offsetTop-tv.clientHeight/2;setTimeout(function(){_bkGuard=false;},400);}}
 function updateBookProgress(p){if(_bkCur)_bkCur.progress=Math.max(_bkCur.progress||0,p||0);const lp=document.getElementById('readerProg');if(lp)lp.textContent=Math.round((p||0)*100)+'%';if(_bkSaveT)clearTimeout(_bkSaveT);_bkSaveT=setTimeout(function(){const lib=getBookLib();const b=lib.find(function(x){return x.id===_bkCur.id;});if(b)b.progress=_bkCur.progress;saveBookLib(lib);},800);}
 function bkFont(d){_bkFs=Math.max(14,Math.min(30,_bkFs+d));const tv=document.getElementById('readerText');if(tv)tv.style.fontSize=_bkFs+'px';const fs=document.getElementById('bkFs');if(fs)fs.textContent=_bkFs;saveReaderPrefs();}
 function bkTheme(){const ts=['day','sepia','night'];_bkTheme=ts[(ts.indexOf(_bkTheme)+1)%3];const r=document.getElementById('reader');if(r)r.className='reader theme-'+_bkTheme;saveReaderPrefs();}
 function openReader(book){
  _bkCur=book;_bkPlaying=false;_bkPaused=false;
  const prefs=loadReaderPrefs();_bkFs=prefs.fs;_bkTheme=prefs.theme;_bkRate=prefs.rate;
- const text=book.text||'';_bkSents=splitSents(text);
- const paras=text.split(/\n+/);let gi=0;
- const html=paras.map(function(p){if(!p.trim())return '';const spans=splitSents(p).map(function(s){const idx=gi++;return '<span class="sen" data-i="'+idx+'">'+esc(s)+'</span>';}).join('');return '<p>'+spans+'</p>';}).join('');
+ const headRE=/^\s*(第[零一二三四五六七八九十百千0-9]+章|chapter\s*\d+|卷[一二三四五六七八九十]|序章|序言|引子|后记|尾声|番外[一二三四五六七八九十]?)/i;
+ const chaps=splitChapters(book.text||'');_bkChaps=chaps;
+ _bkSents=[];let gi=0;
+ const html=chaps.map(function(c,ci){
+   const body=c.text.split(/\r?\n/).filter(function(l){return !headRE.test(l);}).join('\n');
+   const paras=body.split(/\n+/).filter(function(p){return p.trim();});
+   const pspans=paras.map(function(p){
+     const spans=splitSents(p).map(function(s){const idx=gi++;_bkSents.push(s);return '<span class="sen" data-gi="'+idx+'" data-chap="'+ci+'">'+esc(s)+'</span>';}).join('');
+     return '<p>'+spans+'</p>';
+   }).join('');
+   return '<div class="chap" data-chap="'+ci+'"><h3 class="chap-title">'+esc(c.title)+'</h3>'+pspans+'</div>';
+ }).join('');
  const r=document.getElementById('reader');
  r.className='reader theme-'+_bkTheme;
  r.querySelector('#readerTitle').textContent=book.title;
@@ -620,14 +651,31 @@ function openReader(book){
  const fs=document.getElementById('bkFs');if(fs)fs.textContent=_bkFs;
  const goEl=document.getElementById('readerGo');
  if(book.url){goEl.style.display='';goEl.textContent='去原站 ↗';goEl.onclick=function(){window.open(book.url,'_blank');};}else{goEl.style.display='none';}
+ const tocBtn=document.getElementById('readerTocBtn');if(tocBtn)tocBtn.style.display=(_bkChaps.length>1)?'':'none';
  const prog=book.progress||0;
  if(_bkSents.length)_bkIdx=Math.min(_bkSents.length-1,Math.floor(prog*_bkSents.length));
  r.classList.add('show');
  setRate(_bkRate);setPlayUI(false);
+ toggleToc(false);setupMediaSession();
  requestAnimationFrame(function(){const max=tv.scrollHeight-tv.clientHeight;tv.scrollTop=max>0?prog*max:0;});
  tv.onscroll=function(){if(_bkGuard)return;const max=tv.scrollHeight-tv.clientHeight;const p=max>0?tv.scrollTop/max:0;updateBookProgress(p);};
 }
 function closeReader(){if(window.speechSynthesis)speechSynthesis.cancel();_bkPlaying=false;_bkPaused=false;document.getElementById('reader').classList.remove('show');if(_bkCur){const lib=getBookLib();const b=lib.find(function(x){return x.id===_bkCur.id;});if(b)b.progress=_bkCur.progress;saveBookLib(lib);}renderBooks();_bkCur=null;}
+function setupMediaSession(){
+ if(!('mediaSession' in navigator)||!_bkCur)return;
+ try{
+  if(window.MediaMetadata)navigator.mediaSession.metadata=new MediaMetadata({title:_bkCur.title,artist:_bkCur.author||'听书',album:'小魏工作台'});
+  navigator.mediaSession.setActionHandler('play',function(){if(!_bkPlaying)togglePlay();});
+  navigator.mediaSession.setActionHandler('pause',function(){if(_bkPlaying)togglePlay();});
+  navigator.mediaSession.setActionHandler('previoustrack',function(){prevChap();});
+  navigator.mediaSession.setActionHandler('nexttrack',function(){nextChap();});
+ }catch(e){}
+}
+function curChap(){const el=document.querySelector('#readerText .sen.on');if(el&&el.dataset.chap)return parseInt(el.dataset.chap)||0;return 0;}
+function prevChap(){if(!_bkChaps||!_bkChaps.length)return;const ci=curChap();if(ci>0)jumpToChap(ci-1);}
+function nextChap(){if(!_bkChaps||!_bkChaps.length)return;const ci=curChap();if(ci<_bkChaps.length-1)jumpToChap(ci+1);}
+function toggleToc(force){const t=document.getElementById('readerToc');if(!t)return;const show=typeof force==='boolean'?force:!t.classList.contains('open');t.classList.toggle('open',show);if(show&&_bkChaps){const list=document.getElementById('readerTocList');if(list)list.innerHTML=_bkChaps.map(function(c,ci){return '<div class="toc-item" onclick="jumpToChap('+ci+')">'+esc(c.title)+'</div>';}).join('');}}
+function jumpToChap(ci){const el=document.querySelector('#readerText .chap[data-chap="'+ci+'"]');if(el){const tv=document.getElementById('readerText');tv.scrollTop=el.offsetTop-tv.clientHeight/2;}toggleToc(false);}
 </script>
 </head>
 <body>
@@ -4727,9 +4775,10 @@ if('serviceWorker' in navigator){
   <div class="reader-top">
     <div class="rt-back" onclick="closeReader()">✕</div>
     <div class="rt-title" id="readerTitle"></div>
-    <div class="rt-tools"><span onclick="bkTheme()">🌓</span><span id="readerAuthor"></span></div>
+    <div class="rt-tools"><span id="readerTocBtn" style="display:none;" onclick="toggleToc()">📑</span><span onclick="bkTheme()">🌓</span><span id="readerAuthor"></span></div>
   </div>
   <div id="readerText"></div>
+  <div class="toc" id="readerToc"><div class="toc-inner"><div class="toc-head">目录<span class="toc-close" onclick="toggleToc(false)">✕</span></div><div class="toc-list" id="readerTocList"></div></div></div>
   <div class="reader-foot">
     <button class="rf-play" id="rfPlay" onclick="togglePlay()">▶️</button>
     <div class="rf-mid">
