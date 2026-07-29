@@ -2,12 +2,12 @@ const CACHE = 'xw-1785335888511';
 const IGNORE_CACHE = ['xw-v10', 'xw-v9', 'xw-v8', 'xw-v7', 'xw-v6', 'xw-v5', 'xw-v4', 'xw-v3', 'xw-v2', 'xw-v1'];
 
 const PRECACHE = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icon-192.png',
-  '/icon-512.png',
-  '/avatar.png'
+  './',
+  './index.html',
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png',
+  './avatar.png'
 ];
 
 // Install: pre-cache core files, then activate immediately
