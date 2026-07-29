@@ -220,8 +220,13 @@ input,textarea,select{font-family:inherit;font-size:14px;}
 .empty-tip{font-size:13px;}
 
 /* 底部栏 */
-.dock{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;display:flex;justify-content:space-around;align-items:center;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:rgba(255,251,252,0.94);backdrop-filter:blur(12px);border-top:1px solid var(--border);z-index:40;}
+.dock{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;display:flex;justify-content:space-around;align-items:center;padding:10px 12px calc(6px + env(safe-area-inset-bottom));background:#FFFBFC;border-top:1px solid var(--border);z-index:40;}
 .dock-item{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:var(--text-light);padding:4px 10px;border-radius:12px;transition:all .15s;}
+/* 手机端 dock 全宽贴底，不留两侧/底部空白 */
+@media(max-width:599px){
+  .dock{max-width:none;left:0;right:0;transform:none;border-radius:0;padding:8px 12px calc(4px + env(safe-area-inset-bottom));background:#FFFBFC;}
+  body{background:var(--bg);}
+}
 .dock-item:active{transform:scale(0.9);}
 .dock-item.active{color:var(--primary-dark);}
 .dock-emoji{font-size:22px;}

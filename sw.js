@@ -1,4 +1,4 @@
-const CACHE = 'xw-v8';
+const CACHE = 'xw-v9';
 
 const PRECACHE = [
   '/',
