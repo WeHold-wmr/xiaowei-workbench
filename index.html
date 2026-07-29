@@ -378,39 +378,53 @@ input,textarea,select{font-family:inherit;font-size:14px;}
 
 a.link{color:var(--primary-dark);text-decoration:underline;font-weight:600;}
 /* ===== 响应式：手机 → 平板 → 大屏自适应 ===== */
-/* 小平板（竖屏 iPad mini / 横屏大手机） */
+/* 小平板（横屏大手机 / 老iPad竖屏） */
 @media(min-width:600px){
-  .app{max-width:640px;box-shadow:0 0 60px rgba(93,78,95,0.12);}
-  .dock{max-width:640px;}
-  .sheet{max-width:640px;}
-  .sidebar{max-width:360px;}
-  body{font-size:16px;}
-  .card{padding:22px;margin-bottom:18px;}
-  .main{padding:20px 20px calc(100px + env(safe-area-inset-bottom));}
-  .header-title{font-size:18px;}
-  .greeting-title{font-size:28px;}
-  .stat-num{font-size:26px;}
-  .nav-item{padding:14px 16px;font-size:16px;}
-  .avatar{width:70px;height:70px;}
-  .profile-name{font-size:22px;}
-  .grid{gap:16px;}
+  .app{max-width:540px;box-shadow:0 0 60px rgba(93,78,95,0.12);}
+  .dock{max-width:540px;}
+  .sheet{max-width:540px;}
+  .sidebar{max-width:340px;}
+  body{font-size:15px;}
+  .card{padding:20px;margin-bottom:16px;}
+  .main{padding:18px 18px calc(96px + env(safe-area-inset-bottom));}
+  .header-title{font-size:17px;}
+  .greeting-title{font-size:27px;}
+  .stat-num{font-size:25px;}
+  .grid{gap:14px;}
 }
-/* 大平板（iPad Pro / 横屏） + 桌面 */
-@media(min-width:900px){
-  .app{max-width:820px;}
-  .dock{max-width:820px;}
-  .sheet{max-width:820px;}
-  .sidebar{max-width:400px;}
-  body{font-size:17px;}
-  .card{padding:26px;margin-bottom:20px;}
-  .main{padding:24px 24px calc(110px + env(safe-area-inset-bottom));}
-  .header-title{font-size:20px;}
-  .greeting-title{font-size:32px;}
+/* iPad 竖屏（768px+）—— iPad 10 刚好命中这档 */
+@media(min-width:768px){
+  .app{max-width:750px;}
+  .dock{max-width:750px;}
+  .sheet{max-width:750px;}
+  .sidebar{max-width:380px;}
+  body{font-size:16px;}
+  .card{padding:24px;margin-bottom:20px;}
+  .main{padding:22px 22px calc(102px + env(safe-area-inset-bottom));}
+  .header-title{font-size:19px;}
+  .greeting-title{font-size:30px;}
   .stat-num{font-size:28px;}
-  .nav-item{padding:15px 18px;font-size:17px;}
-  .avatar{width:80px;height:80px;}
-  .profile-name{font-size:24px;}
-  .grid{gap:20px;}
+  .nav-item{padding:14px 17px;font-size:16px;}
+  .avatar{width:72px;height:72px;}
+  .profile-name{font-size:22px;}
+  .grid{gap:18px;}
+}
+/* 大平板横屏 + 桌面（1000px+） */
+@media(min-width:1000px){
+  .app{max-width:960px;}
+  .dock{max-width:960px;}
+  .sheet{max-width:960px;}
+  .sidebar{max-width:420px;}
+  body{font-size:17px;}
+  .card{padding:28px;margin-bottom:22px;}
+  .main{padding:26px 26px calc(114px + env(safe-area-inset-bottom));}
+  .header-title{font-size:21px;}
+  .greeting-title{font-size:34px;}
+  .stat-num{font-size:30px;}
+  .nav-item{padding:16px 20px;font-size:17px;}
+  .avatar{width:84px;height:84px;}
+  .profile-name{font-size:25px;}
+  .grid{gap:22px;}
 }
 </style>
 </head>
