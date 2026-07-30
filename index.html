@@ -1336,10 +1336,10 @@ const MEMO_COLORS=['#FFE4EF','#DFF8ED','#EDE4FF','#E0F0FB','#FFF5D6','#FFEDE0','
 
 /* ========== 多设备同步层（离线优先 + 时间戳合并） ========== */
 var _syncDirty=new Set(),_syncTimer=null,_syncRetry=null,_wasOnline=false,_syncRetryCount=0;
-const SYNC_API_BASE='https://api.jsonstorage.net/v1/json';
+const SYNC_API_BASE='https://jsonblob.com/api/jsonBlob';
 
 /* 同步地址：单独存 localStorage，不加入 _syncDirty */
-function _getSyncUrl(){try{return JSON.parse(localStorage.getItem('xw_syncUrl'))||'';}catch(e){return '';}}
+function _getSyncUrl(){try{var u=JSON.parse(localStorage.getItem('xw_syncUrl'))||'';if(typeof u==='string'&&u.indexOf('jsonstorage.net')>=0)return '';return u;}catch(e){return '';}}
 function _setSyncUrl(url){localStorage.setItem('xw_syncUrl',JSON.stringify(url));}
 function copySyncUrl(){var el=document.getElementById('syncUrlOut');if(!el)return;var url=el.value;if(!url||url.indexOf('http')!==0){toast('暂无同步码可复制');return;}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(function(){toast('同步码已复制 📋');}).catch(function(){toast('复制失败，请手动复制');});}else{toast('请手动复制同步码');}}
 
@@ -1350,10 +1350,12 @@ function ensureSyncUrl(){
     if(url){resolve(url);return;}
     _setDot('','正在开启云同步...');
     fetch(SYNC_API_BASE,{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'})
-    .then(function(r){if(!r.ok)throw new Error();return r.json();})
-    .then(function(d){
-      var url=(d.uri||'').replace(/\s/g,'');
-      if(!url)throw new Error('no uri');
+    .then(function(r){
+      if(!r.ok)throw new Error('create '+r.status);
+      var loc=r.headers.get('location')||'';
+      var id=r.headers.get('x-jsonblob-id')||'';
+      var url=loc||(id?SYNC_API_BASE+'/'+id:'');
+      if(!url)throw new Error('no blob url');
       _setSyncUrl(url);
       toast('云同步已开启 ☁️ 请在"跨设备同步"查看同步码');
       resolve(url);
@@ -1362,7 +1364,7 @@ function ensureSyncUrl(){
 }
 
 function _syncRead(url){return fetch(url||_getSyncUrl(),{cache:'no-cache'}).then(function(r){if(!r.ok)throw new Error();return r.json();});}
-function _syncWrite(data,url){return fetch(url||_getSyncUrl(),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(function(r){if(!r.ok)throw new Error();return r.json();});}
+function _syncWrite(data,url){return fetch(url||_getSyncUrl(),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(function(r){if(!r.ok)throw new Error('put '+r.status);return r;});}
 
 /* 基础读写：始终以 localStorage 为准 */
 function load(k,d){try{const v=JSON.parse(localStorage.getItem('xw_'+k));return v??d;}catch(e){return d;}}
