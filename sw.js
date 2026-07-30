@@ -1,4 +1,4 @@
-const CACHE = 'xw-1785335888511';
+const CACHE = 'xw-1785394831189';
 const IGNORE_CACHE = ['xw-v10', 'xw-v9', 'xw-v8', 'xw-v7', 'xw-v6', 'xw-v5', 'xw-v4', 'xw-v3', 'xw-v2', 'xw-v1'];
 
 const PRECACHE = [
