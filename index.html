@@ -1465,6 +1465,24 @@ function fullSync(){
   });
 }
 
+/* 轻量拉取：仅把云端更新的数据合并到本地（不推送、静默），用于定时/聚焦时自动同步 */
+function pullSync(){
+  var url=_getSyncUrl();
+  if(!url)return Promise.resolve(false);
+  return _syncRead(url).then(function(serverData){
+    var changed=0;
+    for(var k in serverData){
+      if(!serverData.hasOwnProperty(k)||!serverData[k])continue;
+      var sv=serverData[k].v,sts=serverData[k].ts||0;
+      if(sts>_ts(k)){
+        try{localStorage.setItem('xw_'+k,JSON.stringify(sv));_setTs(k);changed++;}catch(e){}
+      }
+    }
+    if(changed>0){_setDot('ok','已同步',2000);}
+    return changed>0;
+  }).catch(function(){return false;});
+}
+
 /* 同步指示器 */
 function _setDot(state,title,dur){
   var dot=document.getElementById('syncDot');if(!dot)return;
@@ -1479,6 +1497,10 @@ window.addEventListener('online',function(){
   _wasOnline=true;
 });
 window.addEventListener('offline',function(){_wasOnline=false;_setDot('err','离线');});
+
+/* 自动拉取：标签重新可见 / 每 45 秒，保持多设备同步 */
+document.addEventListener('visibilitychange',function(){if(!document.hidden)pullSync();});
+setInterval(function(){pullSync();},45000);
 
 let DB={
   memo:load('memo',[]),
