@@ -1330,8 +1330,25 @@ var _syncDirty=new Set(),_syncTimer=null,_syncRetry=null,_wasOnline=false,_syncR
 const SYNC_API_BASE='https://jsonblob.com/api/jsonBlob';
 
 /* 同步地址：单独存 localStorage，不加入 _syncDirty */
-function _getSyncUrl(){try{var u=JSON.parse(localStorage.getItem('xw_syncUrl'))||'';if(typeof u==='string'&&u.indexOf('jsonstorage.net')>=0)return '';return u;}catch(e){return '';}}
-function _setSyncUrl(url){localStorage.setItem('xw_syncUrl',JSON.stringify(url));}
+/* 把可能的相对路径 /api/jsonBlob/xxx 补成完整地址（jsonblob 的 Location 头是相对路径，历史版本存错过） */
+function _normalizeSyncUrl(u){
+  if(!u||typeof u!=='string')return '';
+  u=u.trim();
+  if(u.indexOf('jsonstorage.net')>=0)return '';
+  if(u.indexOf('http')===0)return u;
+  var m=u.match(/([0-9a-fA-F-]{20,})\s*$/);
+  if(m)return SYNC_API_BASE+'/'+m[1];
+  return '';
+}
+function _getSyncUrl(){
+  try{
+    var raw=JSON.parse(localStorage.getItem('xw_syncUrl'))||'';
+    var u=_normalizeSyncUrl(raw);
+    if(u&&u!==raw){localStorage.setItem('xw_syncUrl',JSON.stringify(u));}
+    return u;
+  }catch(e){return '';}
+}
+function _setSyncUrl(url){var u=_normalizeSyncUrl(url);localStorage.setItem('xw_syncUrl',JSON.stringify(u||url));}
 function copySyncUrl(){var el=document.getElementById('syncUrlOut');if(!el)return;var url=el.value;if(!url||url.indexOf('http')!==0){toast('暂无同步码可复制');return;}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(function(){toast('同步码已复制 📋');}).catch(function(){toast('复制失败，请手动复制');});}else{toast('请手动复制同步码');}}
 function forceSyncNow(){
   _setDot('','正在同步...');
@@ -1339,6 +1356,58 @@ function forceSyncNow(){
 }
 function _formatLastSync(){
   try{var t=parseInt(localStorage.getItem('xw_lastSync'),10);if(!t)return '未同步';var s=Math.floor((Date.now()-t)/1000);if(s<5)return '刚刚';if(s<60)return s+'秒前';if(s<3600)return Math.floor(s/60)+'分钟前';return Math.floor(s/3600)+'小时前';}catch(e){return '未知';}
+}
+
+/* ===== 扫码配对：生成二维码 + 扫码后自动导入 ===== */
+function _syncPageUrl(){return location.origin+location.pathname;}
+function _syncQrSrc(url){return 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=10&data='+encodeURIComponent(_syncPageUrl()+'#sync='+encodeURIComponent(url));}
+function _syncQrSrcBackup(url){return 'https://api.pwmqr.com/qrcode/create/?url='+encodeURIComponent(_syncPageUrl()+'#sync='+encodeURIComponent(url));}
+
+/* 打开页面时若链接里带同步码，自动连接（扫码后走这条路） */
+function _autoImportFromHash(){
+  var m=(location.hash||'').match(/sync=([^&]+)/);
+  if(!m)return;
+  var u=_normalizeSyncUrl(decodeURIComponent(m[1]));
+  try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}
+  if(!u)return;
+  if(u===_getSyncUrl()){toast('这两台设备已经连上了 ✅');return;}
+  _setSyncUrl(u);
+  toast('正在连接另一台设备…');
+  fullSync().then(function(ok){toast(ok?'连接成功，数据已互通 ✅':'连接失败，请检查网络后点「立即同步」');});
+}
+window.addEventListener('load',function(){setTimeout(_autoImportFromHash,400);});
+
+/* 同步弹层内容 */
+function _syncSheetHtml(){
+  var surl=_getSyncUrl()||'';
+  var last=_formatLastSync();
+  if(!surl){
+    return '<div style="text-align:center;padding:20px 0;color:var(--text-light);font-size:14px;">正在开启云同步…<br><span style="font-size:12px;">稍等一下，马上生成配对二维码</span></div>';
+  }
+  var qr=_syncQrSrc(surl),qr2=_syncQrSrcBackup(surl);
+  return '<div style="font-size:14px;line-height:1.8;margin-bottom:14px;">'+
+      '<b>怎么让手机和电脑数据互通？</b><br>'+
+      '<span style="color:var(--text-light);">1️⃣ 电脑上打开工作台，点开这个「跨设备同步」<br>'+
+      '2️⃣ 手机用相机或微信<b>扫电脑屏幕上的二维码</b><br>'+
+      '3️⃣ 完成，不用输任何东西 ✅</span></div>'+
+    '<div style="text-align:center;margin-bottom:14px;">'+
+      '<img src="'+qr+'" alt="同步二维码" style="width:200px;height:200px;border-radius:14px;background:#fff;border:1.5px solid var(--border);" '+
+      'onerror="this.onerror=function(){this.style.display=\'none\';var t=document.getElementById(\'qrFail\');if(t)t.style.display=\'block\';};this.src=\''+qr2+'\';">'+
+      '<div id="qrFail" style="display:none;font-size:13px;color:var(--text-light);">二维码加载失败，请用下面的手动方式</div>'+
+      '<div style="font-size:12px;color:var(--text-light);margin-top:6px;">扫这个码的设备会加入当前设备的数据</div>'+
+    '</div>'+
+    '<div style="display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:12px;">'+
+      '<span style="font-size:13px;color:var(--text-light);">上次同步：<span id="syncLastTime">'+last+'</span></span>'+
+      '<button class="btn btn-primary" onclick="forceSyncNow()">立即同步</button>'+
+    '</div>'+
+    '<details style="border-top:1px solid var(--border);padding-top:10px;">'+
+      '<summary style="font-size:13px;color:var(--text-light);cursor:pointer;">扫不了码？点这里手动填同步码</summary>'+
+      '<div class="field" style="margin-top:10px;"><label>当前设备的同步码</label><div style="display:flex;gap:8px;">'+
+        '<input id="syncUrlOut" readonly value="'+surl+'" style="flex:1;font-size:12px;background:var(--bg-soft);border:1.5px solid var(--border);border-radius:12px;padding:10px;outline:none;">'+
+        '<button class="btn btn-soft" onclick="copySyncUrl()">复制</button></div></div>'+
+      '<div class="field"><label>粘贴另一台设备的同步码</label>'+
+        '<input id="syncUrlIn" placeholder="粘贴后点右下角保存" style="width:100%;border:1.5px solid var(--border);border-radius:12px;padding:10px;outline:none;"></div>'+
+    '</details>';
 }
 
 /* 确保已有同步地址，没有则自动创建 */
@@ -1352,10 +1421,10 @@ function ensureSyncUrl(){
       if(!r.ok)throw new Error('create '+r.status);
       var loc=r.headers.get('location')||'';
       var id=r.headers.get('x-jsonblob-id')||'';
-      var url=loc||(id?SYNC_API_BASE+'/'+id:'');
+      var url=_normalizeSyncUrl(id?SYNC_API_BASE+'/'+id:loc);
       if(!url)throw new Error('no blob url');
       _setSyncUrl(url);
-      toast('云同步已开启 ☁️ 请在"跨设备同步"查看同步码');
+      toast('云同步已开启 ☁️');
       resolve(url);
     }).catch(function(e){reject(e);});
   });
@@ -1529,8 +1598,10 @@ window.addEventListener('online',function(){
 window.addEventListener('offline',function(){_wasOnline=false;_setDot('err','离线');});
 
 /* 自动拉取：标签重新可见 / 每 15 秒，保持多设备同步 */
-document.addEventListener('visibilitychange',function(){if(!document.hidden)pullSync();});
+document.addEventListener('visibilitychange',function(){if(!document.hidden){if(typeof checkDailyReset==='function')checkDailyReset();pullSync();}});
 setInterval(function(){pullSync();},15000);
+/* 每分钟检查一次是否已跨过零点，跨天则清空待办勾选 */
+setInterval(function(){if(typeof checkDailyReset==='function')checkDailyReset();},60000);
 
 let DB={
   memo:load('memo',[]),
@@ -2162,6 +2233,7 @@ function init(){
   if(h<6)hi.textContent='夜深了，小魏 🌙';else if(h<11)hi.textContent='早上好，小魏 🌅';
   else if(h<14)hi.textContent='中午好，小魏 ☀️';else if(h<18)hi.textContent='下午好，小魏 ☕';else if(h<22)hi.textContent='晚上好，小魏 🌆';else hi.textContent='夜深了，小魏 🌙';
   document.getElementById('quickGrid').innerHTML=QUICK.map(q=>`<div class="quick-item" onclick="go('${q.p}')"><div class="qi-emoji">${q.e}</div><div class="qi-label">${q.n}</div></div>`).join('');
+  checkDailyReset();
   renderSummary();renderFit();renderMakeup();renderDress();renderAigc();renderEn();renderTweet();renderMoney();renderPeriod();renderAnnivs();renderInspire();renderRecipeLib();showDietTip(0);renderVideoPage();renderInspireLinks();renderConstitution();renderSeasonalTips();renderPodcast();
   bindEvents();
   initHomeCarousel();
@@ -2189,10 +2261,35 @@ function getDateKey(d){return d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate
 function getMonthKey(d){return d.getFullYear()+'/'+(d.getMonth()+1);}
 
 // 保存今日活动日志（每次渲染时调用）
+/* ===== 每日零点自动重置待办勾选状态 ===== */
+function checkDailyReset(){
+  const today=getDateKey(new Date());
+  let last='';
+  try{last=JSON.parse(localStorage.getItem('xw_todoResetDate'))||'';}catch(e){last='';}
+  if(last===today)return false;
+  const first=!last;
+  try{localStorage.setItem('xw_todoResetDate',JSON.stringify(today));}catch(e){}
+  if(first)return false;              // 第一次运行只记录日期，不清空
+  // 若待办数据今天已被改动过（本机或另一台设备已重置/已勾选），就不要再清空，避免覆盖对方
+  try{
+    const lastEdit=_ts('homeTodos');
+    if(lastEdit&&getDateKey(new Date(lastEdit))===today)return false;
+  }catch(e){}
+  const todos=DB.homeTodos||[];
+  let cleared=0;
+  todos.forEach(t=>{if(t.done){t.done=false;cleared++;}});
+  if(cleared>0){
+    save('homeTodos',DB.homeTodos);
+    if(typeof renderHomeTodos==='function')renderHomeTodos();
+    if(typeof renderHomeStats==='function')renderHomeStats();
+    if(typeof toast==='function')toast('新的一天，待办已重置 🌅');
+  }
+  return cleared>0;
+}
+
 function logTodayActivity(){
   if(!DB.dailyLog)DB.dailyLog={};
   const dk=getDateKey(new Date());
-  if(DB.dailyLog[dk])return; // 今天已经记录过了
   const todos=DB.homeTodos||[];
   const done=todos.filter(t=>t.done).length;
   const ci=DB.fit.checkins||{};
@@ -2208,6 +2305,9 @@ function logTodayActivity(){
     const rd=new Date(r.date||r.ts);
     return rd.getDate()===now.getDate()&&rd.getMonth()===now.getMonth()&&rd.getFullYear()===now.getFullYear()&&r.type!=='in';
   }).reduce((s,r)=>s+(parseFloat(r.amount)||0),0);
+  const prev=DB.dailyLog[dk]||{};
+  // 内容有变化才写入，避免每次渲染都触发同步推送
+  if(prev.todos===done&&prev.totalTodos===todos.length&&prev.fitDone===fitDone&&prev.enWords===enToday&&prev.moneyOut===dayOut)return;
   DB.dailyLog[dk]={
     todos:done,totalTodos:todos.length,
     fitDone:fitDone,enWords:enToday,
@@ -4538,7 +4638,7 @@ function openSheet(mode){
     <div class="field"><label>适合季节</label><select id="wdSeason" style="width:100%;border:1.5px solid var(--border);border-radius:12px;padding:10px;outline:none;">${WD_SEASONS.map(s=>`<option ${s==='通用'?'selected':''}>${s}</option>`).join('')}</select></div>
     <div class="field"><label>备注（品牌/尺码等）</label><input id="wdNote" placeholder="如 UNIQLO M码"></div>`;}
   else if(mode==='podcast'){title.textContent='添加播客';body.innerHTML=`<div class="field"><label>节目名称 *</label><input id="podName" placeholder="如 某某电台 / 播客名"></div><div class="field"><label>分类</label><select id="podCat" style="width:100%;border:1.5px solid var(--border);border-radius:12px;padding:10px;outline:none;"><option value="提升">女生提升</option><option value="搞钱">努力挣钱</option><option value="自爱">好好爱自己</option><option value="政经">政史财经</option></select></div><div class="field"><label>收听链接（Apple 播客 / 喜马拉雅 等）</label><input id="podLink" placeholder="https://..."></div><div class="field"><label>音频直链（可选，填了可在 App 内直接播放 .mp3）</label><input id="podAudio" placeholder="https://...mp3"></div>`;}
-  else if(mode==='sync'){title.textContent='跨设备同步';var surl=_getSyncUrl()||'';var last=_formatLastSync();body.innerHTML=`<div style="font-size:13px;color:var(--text-light);margin-bottom:12px;">⚠️ <b>必须让手机和电脑使用同一个同步码</b>，数据才会互通。把下面的同步码复制到另一台设备输入即可。</div><div class="field"><label>当前同步码 ${surl?'':'（保存数据后自动生成）'}</label><div style="display:flex;gap:8px;"><input id="syncUrlOut" readonly value="${surl||'尚未开启，先勾选/保存一次数据后会自动生成'}" style="flex:1;font-size:12px;background:var(--bg-soft);border:1.5px solid var(--border);border-radius:12px;padding:10px;outline:none;"><button class="btn btn-soft" onclick="copySyncUrl()">复制</button></div></div><div class="field"><label>从其他设备导入同步码</label><input id="syncUrlIn" placeholder="粘贴另一台设备的同步码链接" style="width:100%;border:1.5px solid var(--border);border-radius:12px;padding:10px;outline:none;"></div><div class="field" style="display:flex;gap:8px;align-items:center;justify-content:space-between;"><span style="font-size:13px;color:var(--text-light);">上次同步：<span id="syncLastTime">${last}</span></span><button class="btn btn-primary" onclick="forceSyncNow()">立即同步</button></div>`;}
+  else if(mode==='sync'){title.textContent='跨设备同步';body.innerHTML=_syncSheetHtml();if(!_getSyncUrl()){ensureSyncUrl().then(function(){if(sheetMode==='sync')body.innerHTML=_syncSheetHtml();}).catch(function(){if(sheetMode==='sync')body.innerHTML='<div style="padding:16px;font-size:14px;color:var(--text-light);text-align:center;">云同步开启失败，请检查网络后重新打开本页面</div>';});}}
   document.getElementById('sheet').classList.add('open');
   setTimeout(()=>{const i=document.querySelector('#sheetBody input,#sheetBody textarea');if(i)i.focus();},300);
 }
@@ -4561,7 +4661,7 @@ function saveSheet(){
   else if(sheetMode==='dressLink'){const t=document.getElementById('dlTitle').value.trim(),u=document.getElementById('dlUrl').value.trim(),p=document.getElementById('dlPlat').value,n=document.getElementById('dlNote').value.trim();if(!t||!u){toast('请填写标题和链接');return;}DB.dress.links.unshift({title:t,url:u,plat:p,note:n});save('dress',DB.dress);renderDressLinks();toast('穿搭链接已收藏 ⭐');}
   else if(sheetMode==='wardrobeAdd'){saveWardrobeItem();return;}
   else if(sheetMode==='podcast'){const n=document.getElementById('podName').value.trim();if(!n){toast('请填写节目名称');return;}const link=document.getElementById('podLink').value.trim();const audio=document.getElementById('podAudio').value.trim();if(!link&&!audio){toast('请至少填写收听链接或音频直链');return;}if(link&&!link.startsWith('http')){toast('链接需以 http 开头');return;}const lib=getPodLib();lib.unshift({id:'p'+Date.now(),name:n,cat:document.getElementById('podCat').value,note:'',link:link,audio:audio});savePodLib(lib);renderPodcast();toast('播客已收藏 🎧');}
-  else if(sheetMode==='sync'){const urlIn=document.getElementById('syncUrlIn').value.trim();if(urlIn){if(!urlIn.startsWith('http')){toast('同步码需以 http 开头');return;}if(urlIn===_getSyncUrl()){toast('这就是当前设备的同步码');closeSheet();return;}_setSyncUrl(urlIn);toast('已导入同步码，正在同步...');closeSheet();fullSync().then(function(ok){if(ok){toast('同步完成 ✨');}else{toast('同步失败，请检查网络');}});return;}}
+  else if(sheetMode==='sync'){const _sin=document.getElementById('syncUrlIn');const urlIn=_sin?_sin.value.trim():'';if(!urlIn){closeSheet();return;}const _u=_normalizeSyncUrl(urlIn);if(!_u){toast('同步码格式不对，请重新复制');return;}if(_u===_getSyncUrl()){toast('这就是当前设备的同步码');closeSheet();return;}_setSyncUrl(_u);toast('已导入，正在同步…');closeSheet();fullSync().then(function(ok){toast(ok?'同步完成 ✨':'同步失败，请检查网络');});return;}
   closeSheet();
 }
 
